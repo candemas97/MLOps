@@ -7,13 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 
-# Random Forest
-from sklearn.ensemble import RandomForestClassifier
-
-# XGBoost
-from xgboost import XGBClassifier
-
-# Save model
+## Import model from saved files
 import joblib
 
 
