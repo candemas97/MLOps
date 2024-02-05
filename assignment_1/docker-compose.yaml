@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8989:8000"
+    volumes:
+      - ./app:/app
+      - ./data:/data
+      - ./production_model:/production_model
+    environment:
+      - ENVIRONMENT=development
+
+# docker-compose up --build

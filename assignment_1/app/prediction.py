@@ -115,13 +115,14 @@ def predict_model(model_to_be_used: int, X_test: pd.DataFrame) -> list[str]:
         list[str]: predition of the model
     """
 
-    if model_to_be_used == 0:
+    if model_to_be_used == "random_forest":
         model = joblib.load(
-            "./model_random_forest.joblib"
+            "../production_model/model_random_forest.joblib"
         )  # Aquí prodría ser sólo "model_random_forest.joblib"
-    else:
+
+    if model_to_be_used == "xgb":
         model = joblib.load(
-            "./model_xgb.joblib"
+            "../production_model/model_xgb.joblib"
         )  # Aquí prodría ser sólo "model_xgb.joblib"
 
     resul = model.predict(X_test)
@@ -141,7 +142,7 @@ def predict_model(model_to_be_used: int, X_test: pd.DataFrame) -> list[str]:
     return resul
 
 
-def assign_penguin_specie(dictionary_to_predict: dict) -> list:
+def assign_penguin_specie(dictionary_to_predict: dict, model_to_be_used: str) -> list:
     """AI is creating summary for assign_penguin_specie
 
     Args:
@@ -152,11 +153,7 @@ def assign_penguin_specie(dictionary_to_predict: dict) -> list:
     """
 
     X_test = pd.DataFrame(dictionary_to_predict)
-
-    model_to_be_used = X_test["model"][0]
-
-    X_test = X_test.drop(columns="model")
-
+    # X_test = X_test.drop(columns="model")
     X_test = data_preparation(X_test)
 
     resul = predict_model(model_to_be_used, X_test)
@@ -165,7 +162,7 @@ def assign_penguin_specie(dictionary_to_predict: dict) -> list:
 
 
 if __name__ == "__main__":
-    test_var = {
+    observation = {
         "culmenLen": [31.2, 12.3],
         "culmenDepth": [1.2, 3.4],
         "flipperLen": [1, 2],
@@ -173,7 +170,8 @@ if __name__ == "__main__":
         "sex": ["MALE", "MALE"],
         "delta15N": [1.2, 2.45],
         "delta13C": [1, 34.5],
-        "model": 1,  # Ojo esto define cuál modelo se usará si XGBoost o Random Forest, revisar si quieren por distintas APi pedir o de otra manera
     }
-    sol = assign_penguin_specie(test_var)
+
+    model_to_be_used = "xgb"
+    sol = assign_penguin_specie(observation, model_to_be_used)
     print(f"\nWhat returns this code is an array (below see the result):\n\n{sol}")
