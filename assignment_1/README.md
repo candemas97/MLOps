@@ -10,9 +10,10 @@ After that, follow the next steps:
 
 1. Open this repo in **_Visual Studio Code (VSCode)_**.
 2. Go to the Dockerfile
-3. Open a new terminal
-4. Add the following line in your new terminal: `cd assignment_1`. This will allow you to be in the current assignment (**_assignment 1_**).
+3. Open a new terminal in your current folder
+4. Add the following line in your new terminal: `cd assignment_1`. This will allow you to be in the current assignment (**_assignment 1_**) because the terminal, by default, takes the main folder as the path.
    > [!NOTE]
+   >
    > If you only download the folder **assignment_1** you can skip this step (step 4)
 5. Create a docker image: `docker build -t assigment_1 .`
 6. Run the container: `docker run --name container_assignment_1 -p 8989:8000 assigment_1`
