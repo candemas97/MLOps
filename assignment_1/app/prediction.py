@@ -15,9 +15,7 @@ def train_data() -> pd.DataFrame:
     Returns:
         pd.DataFrame: X_train as it was trained
     """
-    data = pd.read_csv(
-        "../data/penguins_lter.csv"
-    )  # "../data/penguins_lter.csv"
+    data = pd.read_csv("../data/penguins_lter.csv")  # "../data/penguins_lter.csv"
     data.columns = data.columns.str.lower()
     # Division between y and the rest of variables
 
@@ -51,6 +49,30 @@ def data_preparation(X_test: pd.DataFrame) -> pd.DataFrame:
 
     # Same column name
     X_test.columns = X_train.columns
+
+    # Delete Extra columns
+    X_test = X_test[
+        [
+            "culmen length (mm)",
+            "culmen depth (mm)",
+            "flipper length (mm)",
+            "body mass (g)",
+            "sex",
+            "delta 15 n (o/oo)",
+            "delta 13 c (o/oo)",
+        ]
+    ]
+    X_train = X_train[
+        [
+            "culmen length (mm)",
+            "culmen depth (mm)",
+            "flipper length (mm)",
+            "body mass (g)",
+            "sex",
+            "delta 15 n (o/oo)",
+            "delta 13 c (o/oo)",
+        ]
+    ]
 
     # Null treatment
 
@@ -163,13 +185,23 @@ def assign_penguin_specie(dictionary_to_predict: dict, model_to_be_used: str) ->
 
 if __name__ == "__main__":
     observation = {
-        "culmenLen": [31.2, 12.3],
-        "culmenDepth": [1.2, 3.4],
-        "flipperLen": [1, 2],
-        "bodyMass": [31, 12],
-        "sex": ["MALE", "MALE"],
-        "delta15N": [1.2, 2.45],
-        "delta13C": [1, 34.5],
+        "studyName": ["PAL0708", "PAL0708"],
+        "Sample Number": [1, 2],
+        # "Species": ["Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)"],
+        "Region": ["Anvers", "Anvers"],
+        "Island": ["Torgersen", "Torgersen"],
+        "Stage": ["Adult, 1 Egg Stage", "Adult, 1 Egg Stage"],
+        "Individual ID": ["N1A1", "N1A2"],
+        "Clutch Completion": ["Yes", "Yes"],
+        "Date Egg": ["39397", "39397"],
+        "Culmen Length (mm)": [39.1, 39.5],
+        "Culmen Depth (mm)": [18.7, 17.4],
+        "Flipper Length (mm)": [181, 186],
+        "Body Mass (g)": [3750, 3800],
+        "Sex": ["MALE", "FEMALE"],
+        "Delta 15 N (o/oo)": [np.nan, 8.94],
+        "Delta 13 C (o/oo)": [np.nan, 9.87],
+        "Comments": ["Not enough blood for isotopes.", np.nan],
     }
 
     model_to_be_used = "xgb"

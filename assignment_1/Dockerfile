@@ -13,6 +13,9 @@ COPY ./app /app
 COPY ./production_model /production_model
 COPY ./data /data
 
+WORKDIR /app
+CMD uvicorn app:app --host 0.0.0.0 --port 8000
+
 # docker container ls
 # docker images
 
@@ -27,5 +30,3 @@ COPY ./data /data
 # Run Code (assigning container name) -> () means optional
 ## docker run (-d) --name [container_name] -p [expose_port]:[publish_port] [image_name] 
 ## ASSIGNMENT EXAMPLE: docker run --name container_assignment_1 -p 8989:8000 assigment_1
-WORKDIR /app
-CMD uvicorn app:app --host 0.0.0.0 --port 8000
