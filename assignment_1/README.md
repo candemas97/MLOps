@@ -28,3 +28,45 @@ In the following table you can find the description of each API:
 | `/prediction_penguin` | Predict the penguin specie. You just need to execute the code |
 | `/prediction_penguin/select_model_dropdown/{model_to_be_used}` | Predict the penguin specie. First you need to select from a dropdown what model to use before you execute the code |
 | `/prediction_penguin/select_model_written/{model_to_be_used}` | Predict the penguin specie. First you need to write down what model to use before you execute the code. There are only two models (**_xgb_** or **_random_forest_**) in case you write another model, the API will remember you that you can only write down two models |
+
+## Model Parameters
+
+Below you can see the parameters of the model:
+
+```json
+
+{
+
+  "studyName": ["PAL0708", "PAL0708"],
+
+  "SampleNumber": [1, 2],
+
+  "Region": ["Anvers", "Anvers"],
+
+  "Island": ["Torgersen", "Torgersen"],
+
+  "Stage": ["Adult, 1 Egg Stage", "Adult, 1 Egg Stage"],
+
+  "IndividualID": ["N1A1", "N1A2"],
+
+  "ClutchCompletion": ["Yes", "Yes"],
+
+  "DateEgg": ["39397", "39397"],
+
+  "CulmenLength": [39.1, 39.5],
+
+  "CulmenDepth": [18.7, 17.4],
+
+  "FlipperLength": [181, 186],
+
+  "BodyMass": [3750, 3800],
+
+  "Sex": ["MALE", "FEMALE"],
+
+  "Delta15N": [1.1, 8.94],
+
+  "Delta13C": [3.5, 9.87],
+
+  "Comments": ["Not enough blood for isotopes.", "Hola"]
+
+}
