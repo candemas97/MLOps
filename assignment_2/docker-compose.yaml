@@ -1,0 +1,26 @@
+# docker-compose Syntax 
+version: '3'
+services:
+  # Service title
+  tfx:
+    # Creates tensorflow extended = 1.12.0 image
+    image: tensorflow/tfx:1.12.0
+    # Assign container name
+    container_name: tfx
+    # Assign ports to be used
+    ports:
+      - "8888:8888"
+      - "6006:6006"
+    # Uses directory data and add their image into /tfx/src
+    volumes:
+      - .:/tfx/src
+    entrypoint: /run_jupyter.sh
+    # Interactive mode for running the ipynb
+    stdin_open: true
+    tty: true
+
+# docker-compose build # -> just build the image but does not run it
+# docker-compose up # -> build and run the image
+# docker-compose down
+# docker-compose stop # Does not delete the conteiner
+# Presional Control + C
