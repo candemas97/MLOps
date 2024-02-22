@@ -1,0 +1,3 @@
+requests==2.31.0
+dvc==3.45.0 # track local changes
+dvc-gdrive==3.0.1 # push to google drive

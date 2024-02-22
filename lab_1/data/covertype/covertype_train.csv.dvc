@@ -1,0 +1,5 @@
+outs:
+- md5: ad1406f080e5fa2c3f0d0d1e795bb440
+  size: 6405459
+  hash: md5
+  path: covertype_train.csv
