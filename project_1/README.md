@@ -56,7 +56,7 @@ To be able to do that you need to do the following:
    > It is suposed that when you run the `docker-compose up`, you should have all the needed dependencies, nevertheless, run this line in case that any error appears
 
 ```
-pip install -r /requirements.txt
+pip install -r ./requirements.txt
 ```
 
 4. You need to import the data in the specific folder, please run the following lines:
