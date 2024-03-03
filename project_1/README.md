@@ -63,7 +63,6 @@ pip install -r ./requirements.txt
 
 ```
 dvc pull data/covertype/covertype_train.csv
-dvc pull data/data_modified/covertype_train_v2.csv
 dvc pull data/sv/serving_data.csv
 ```
 
