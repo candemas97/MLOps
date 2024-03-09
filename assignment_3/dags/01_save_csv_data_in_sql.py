@@ -120,7 +120,7 @@ def read_csv() -> pd.DataFrame:
 
 
 with DAG(
-    dag_id="3-readingcsv",
+    dag_id="01-readingcsv-to-mysql",
     description="Reading a CSV with Python Operator",
     schedule_interval="@once",
     start_date=datetime(2024, 3, 3),

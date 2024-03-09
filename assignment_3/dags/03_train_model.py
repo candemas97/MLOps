@@ -7,26 +7,29 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from sklearn.impute import SimpleImputer
 from datetime import datetime
 import os
 
-# def read_csv_train_model() -> pd.DataFrame:
-#     # Where we currently are, usually we are at -> /opt/***/
-#     root_airflow = os.getcwd()
-#     # Join path to access to the needed csv file
-#     csv_path = f"{root_airflow}/dags/data/penguins_lter.csv"
-#     # Read CSV file
-#     df = pd.read_csv(csv_path)
-
-#     return df
-
-def train_model():
-    ## Lectura
+def read_csv_train_model() -> pd.DataFrame:
+    # Where we currently are, usually we are at -> /opt/***/
     root_airflow = os.getcwd()
     # Join path to access to the needed csv file
     csv_path = f"{root_airflow}/dags/data/penguins_lter.csv"
     # Read CSV file
-    data = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path)
+
+    return df
+
+def train_model():
+    # ## Lectura
+    # root_airflow = os.getcwd()
+    # # Join path to access to the needed csv file
+    # csv_path = f"{root_airflow}/dags/data/penguins_lter.csv"
+    # # Read CSV file
+    # data = pd.read_csv(csv_path)
+
+    data = read_csv_train_model()
 
     ## Transformación
     data["Sex"] = data["Sex"].replace({".":None,np.nan:None})
@@ -45,11 +48,28 @@ def train_model():
     X, y = data_x.values, data_y
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+    X_train, X_test = pd.DataFrame(X_train), pd.DataFrame(X_test)
+
+    # We look every column type
+    categorical_columns = X_train.select_dtypes(exclude=[int, float]).columns
+    numerical_columns = X_train.select_dtypes(include=[int, float]).columns
+
+    # Impute variables
+    categoricas_imputer = SimpleImputer(missing_values=np.nan, strategy="constant")
+    numericas_imputer = SimpleImputer(missing_values=np.nan, strategy="median")
+
+    # Training Imputers
+    numericas_imputer.fit(X_train[numerical_columns])
+
+    # Impute variables
+    X_train[numerical_columns] = numericas_imputer.transform(X_train[numerical_columns])
+    X_test[numerical_columns] = numericas_imputer.transform(X_test[numerical_columns])
+
     ## Entrenamiento
     algorithm = DecisionTreeClassifier()
     h = algorithm.fit(X_train, y_train)
     y_pred = algorithm.predict(X_test) 
-    print(y_pred)
+    print(f"\n\nRESULT GIVEN BY THE MODEL:\n\n{y_pred}\n\n")
 
 with DAG(
     dag_id="03-train-model",
@@ -58,7 +78,7 @@ with DAG(
     start_date=datetime(2024, 3, 3),
 ) as dag:
 
-    t1 = PythonOperator(task_id="train-model", python_callable=train_model)
+    t1 = PythonOperator(task_id="03-train-model", python_callable=train_model)
 
     t1
 
