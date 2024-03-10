@@ -1,0 +1,46 @@
+version: '3'
+services:
+    postgres:
+        image: postgres:9.6
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+    mysql:
+
+        image: mysql:5.7.27
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+        volumes:
+            - ./data:/var/lib/mysql-files/
+            - ./mysql.cnf:/etc/mysql/mysql.cnf    
+    webserver:
+        # image: puckel/docker-airflow:1.10.9 # puckel/docker-airflow:1.10.9
+        build:
+             context: .
+             dockerfile: ./Dockerfile
+        restart: always
+        depends_on:
+            - postgres
+            - mysql
+        environment:
+            - INSTALL_MYSQL=y
+            - LOAD_EX=n
+            - EXECUTOR=Local
+            - AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
+            - AIRFLOW__SMTP__SMTP_USER=youremail@gmail.com
+            - AIRFLOW__SMTP__SMTP_PASSWORD=abasdfscasdfasdfsdf
+            - AIRFLOW__SMTP__SMTP_PORT=587
+            - AIRFLOW__SMTP__SMTP_MAIL_FROM=Airflow
+            - _PIP_ADDITIONAL_REQUIREMENTS=${_PIP_ADDITIONAL_REQUIREMENTS:-} scikit-learn
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+            - ./data:/usr/local/airflow/op_files
+        ports:
+            - "8080:8080"
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
