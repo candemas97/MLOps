@@ -106,8 +106,9 @@ services:
   mysql:
     # Nombre del servicio
     image: mysql:latest  # Imagen Docker para el contenedor MySQL
+    container_name: mysql
     ports:
-      - "3307:3307"  # Mapeo de puertos del contenedor al host
+      - "3307:3306"  # Mapeo de puertos del contenedor al host
     environment:
       MYSQL_ROOT_PASSWORD: airflow  # Contraseña de root para MySQL
       MYSQL_DATABASE: project_2  # Nombre de la base de datos MySQL
@@ -353,6 +354,61 @@ services:
     networks:
       project_network:
         ipv4_address: "10.56.1.10"
+
+  minio:
+    container_name: Minio
+    command: server /data --console-address ":8083"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=supersecret
+    image: quay.io/minio/minio:latest
+    ports:
+      - '8083:8083'
+      - '8084:8084'
+    volumes:
+      - ./minio:/data
+    restart: unless-stopped
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.22"
+
+  mlflow:
+    build: ./docker/mlflow  # La ubicación de tu Dockerfile de MLflow
+    container_name: mlflow
+    environment:
+      # Configura MLflow para usar MinIO como el backend de S3
+      MLFLOW_S3_ENDPOINT_URL: http://minio:8083  # Asegúrate de que esto coincida con el nombre del servicio y el puerto de MinIO en tu docker-compose
+      AWS_ACCESS_KEY_ID: admin  # Deben coincidir con tus credenciales de MinIO
+      AWS_SECRET_ACCESS_KEY: supersecret
+    ports:
+      - "8087:8087"  # El puerto en el que MLflow estará disponible
+    depends_on:
+      - minio
+      - mysql
+    command: mlflow server --backend-store-uri mysql://root:airflow@mysql:3306/project_2 --default-artifact-root s3://mlflow_bucket/mlflow/ --host 0.0.0.0 --port 8087
+    restart: always
+    volumes:
+    - ./docker/mlflow/code:/mlflow_code
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.23"  # Asegúrate de que la dirección IP esté dentro de tu rango de red definido y sea única
+
+  jupyter:
+    build: ./docker/jupyter
+    container_name: jupyter
+    environment:
+      # Configura MLflow para usar MinIO como el backend de S3
+      MLFLOW_S3_ENDPOINT_URL: http://minio:8083  # Asegúrate de que esto coincida con el nombre del servicio y el puerto de MinIO en tu docker-compose
+      AWS_ACCESS_KEY_ID: admin  # Deben coincidir con tus credenciales de MinIO
+      AWS_SECRET_ACCESS_KEY: supersecret
+    ports:
+      - "8088:8088"
+    restart: always
+    volumes:
+    - ./docker/jupyter/code:/jupyter_code
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.24"  # Asegúrate de que la dirección IP esté dentro de tu rango de red definido y sea única
 
 volumes:
   postgres-db-volume:
