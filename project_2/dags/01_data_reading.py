@@ -4,6 +4,8 @@ import os
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
+from sqlalchemy import create_engine
+import pandas as pd
 
 def read_data_from_api(group: int) ->json:
     """Read data from API given
@@ -20,10 +22,32 @@ def read_data_from_api(group: int) ->json:
         json.dump(response.json(), jf, ensure_ascii=False, indent=2)
     return data_json
 
+def save_json_to_sql(**context) -> None:
+    """"
+    Save json read into MySQL
+    """
+    # Read data from previous step
+    data_json = context["task_instance"].xcom_pull(
+        task_ids="read_data_from_api"
+    )
+
+    # Transform JSON into a pd.DataFrame
+    data = pd.DataFrame(data_json["data"])
+
+    # Connect to MySQL
+    engine = create_engine('mysql://root:airflow@mysql:3306/project_2')
+
+    # Save data, if exits append into the current table
+    data.to_sql('dataset_covertype', con=engine, if_exists='append', index=False)
+    print("Saved into MySQL!")
+
+
+
+
 # Creación del DAG y ejecución del mismo
 
 """
-Se crea el dag y que se ejecute diariamente a las 00:00
+Create dag and set the schedule interval
 """
 dag = DAG(
     "Cover-Type-Prediction",
@@ -43,4 +67,14 @@ t1 = PythonOperator(
     dag=dag,
 )
 
-t1
+"""
+Task 2: Save data in MySQL
+"""
+t2 = PythonOperator(
+    task_id="save_json_to_sql",
+    provide_context=True,
+    python_callable=save_json_to_sql,
+    dag=dag,
+)
+
+t1 >> t2

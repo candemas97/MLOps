@@ -99,6 +99,24 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+  
+  mysql:
+    # Nombre del servicio
+    image: mysql:latest  # Imagen Docker para el contenedor MySQL
+    ports:
+      - "3307:3307"  # Mapeo de puertos del contenedor al host
+    environment:
+      MYSQL_ROOT_PASSWORD: airflow  # Contraseña de root para MySQL
+      MYSQL_DATABASE: project_2  # Nombre de la base de datos MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]  # Comando de verificación de salud
+      interval: 10s  # Frecuencia de la verificación de salud
+      timeout: 5s  # Tiempo máximo de espera para la verificación de salud
+      retries: 3  # Número de intentos de verificación de salud
+      start_period: 10s  # Tiempo antes de iniciar las verificaciones de salud
+    restart: always  # Política de reinicio del contenedor
 
   redis:
     image: redis:latest
@@ -296,3 +314,4 @@ services:
 
 volumes:
   postgres-db-volume:
+  mysql_data:
