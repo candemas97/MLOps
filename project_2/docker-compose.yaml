@@ -99,6 +99,9 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.21"
   
   mysql:
     # Nombre del servicio
@@ -117,6 +120,9 @@ services:
       retries: 3  # Número de intentos de verificación de salud
       start_period: 10s  # Tiempo antes de iniciar las verificaciones de salud
     restart: always  # Política de reinicio del contenedor
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.20"
 
   redis:
     image: redis:latest
@@ -129,6 +135,9 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.19"
 
   airflow-webserver:
     <<: *airflow-common
@@ -146,6 +155,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.18"
 
   airflow-scheduler:
     <<: *airflow-common
@@ -161,6 +173,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.17"
 
   airflow-worker:
     <<: *airflow-common
@@ -183,6 +198,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.16"
 
   airflow-triggerer:
     <<: *airflow-common
@@ -198,6 +216,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.15"
 
   airflow-init:
     <<: *airflow-common
@@ -276,6 +297,9 @@ services:
     user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.14"
 
   airflow-cli:
     <<: *airflow-common
@@ -289,6 +313,9 @@ services:
       - bash
       - -c
       - airflow
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.12"
 
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
@@ -311,7 +338,29 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.11"
+
+  fast_api:
+    build: ./docker/fastapi
+    container_name: fastapi
+    ports:
+      - '8085:8085'
+    volumes:
+      - ./docker/fastapi/code/fast_api_main.py:/fast_api_main.py
+    restart: always
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.10"
 
 volumes:
   postgres-db-volume:
   mysql_data:
+
+networks:
+  project_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.56.1.0/24"
