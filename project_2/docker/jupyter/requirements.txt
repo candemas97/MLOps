@@ -1,6 +1,9 @@
 mlflow==2.3.0
 pycaret==3.0.0
 scikit-learn==1.2.2
+xgboost==2.0.3
 scipy==1.11.4
 boto3==1.26.121
 requests==2.28.2
+pymysql==1.1.0
+mysqlclient==2.2.4

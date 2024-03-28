@@ -385,7 +385,14 @@ services:
     depends_on:
       - minio
       - mysql
-    command: mlflow server --backend-store-uri mysql://root:airflow@mysql:3306/project_2 --default-artifact-root s3://mlflow_bucket/mlflow/ --host 0.0.0.0 --port 8087
+    # The name of the bucket in minio is called project2bucket
+    command: >
+      mlflow server 
+      --backend-store-uri mysql://root:airflow@mysql:3306/project_2 
+      --default-artifact-root s3://project2bucket/artifacts 
+      --host 0.0.0.0 
+      --port 8087
+      --serve-artifacts
     restart: always
     volumes:
     - ./docker/mlflow/code:/mlflow_code
@@ -405,7 +412,9 @@ services:
       - "8088:8088"
     restart: always
     volumes:
-    - ./docker/jupyter/code:/jupyter_code
+    - ./docker/jupyter:/jupyter_code
+    stdin_open: true
+    tty: true
     networks:
       project_network:
         ipv4_address: "10.56.1.24"  # Asegúrate de que la dirección IP esté dentro de tu rango de red definido y sea única
