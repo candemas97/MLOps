@@ -85,6 +85,7 @@ x-airflow-common:
       condition: service_healthy
 
 services:
+
   postgres:
     image: postgres:13
     environment:
@@ -104,23 +105,23 @@ services:
         ipv4_address: "10.56.1.21"
   
   mysql:
-    # Nombre del servicio
-    image: mysql:latest  # Imagen Docker para el contenedor MySQL
+    # Service Name
+    image: mysql:latest  # Docker image for SQL Container
     container_name: mysql
     ports:
-      - "3307:3306"  # Mapeo de puertos del contenedor al host
+      - "3307:3306"  # Mapping ports
     environment:
-      MYSQL_ROOT_PASSWORD: airflow  # Contraseña de root para MySQL
-      MYSQL_DATABASE: project_2  # Nombre de la base de datos MySQL
+      MYSQL_ROOT_PASSWORD: airflow  # Root password
+      MYSQL_DATABASE: project_2  # MySQL database
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]  # Comando de verificación de salud
-      interval: 10s  # Frecuencia de la verificación de salud
-      timeout: 5s  # Tiempo máximo de espera para la verificación de salud
-      retries: 3  # Número de intentos de verificación de salud
-      start_period: 10s  # Tiempo antes de iniciar las verificaciones de salud
-    restart: always  # Política de reinicio del contenedor
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]  # Verify health
+      interval: 10s  # Frecuency of health verification
+      timeout: 5s  # Max wait for health verification
+      retries: 3  # Number of retries for health verification
+      start_period: 10s  # Waiting time before health verification
+    restart: always  
     networks:
       project_network:
         ipv4_address: "10.56.1.20"
@@ -343,6 +344,7 @@ services:
       project_network:
         ipv4_address: "10.56.1.11"
 
+  # API for request given by users
   fast_api:
     build: ./docker/fastapi
     container_name: fastapi
@@ -355,7 +357,8 @@ services:
       project_network:
         ipv4_address: "10.56.1.10"
 
-  minio:
+  # MinIO - we call it as s3
+  s3:
     container_name: Minio
     command: server /data --console-address ":8083"
     environment:
@@ -366,47 +369,57 @@ services:
       - '8083:8083'
       - '8084:8084'
     volumes:
-      - ./minio:/data
+      - ./minio_data:/data
     restart: unless-stopped
     networks:
       project_network:
         ipv4_address: "10.56.1.22"
 
+
   mlflow:
-    build: ./docker/mlflow  # La ubicación de tu Dockerfile de MLflow
+    build: ./docker/mlflow  # MLFlow Dockerfile path
     container_name: mlflow
     environment:
-      # Configura MLflow para usar MinIO como el backend de S3
-      MLFLOW_S3_ENDPOINT_URL: http://minio:8083  # Asegúrate de que esto coincida con el nombre del servicio y el puerto de MinIO en tu docker-compose
-      AWS_ACCESS_KEY_ID: admin  # Deben coincidir con tus credenciales de MinIO
+      # MLFlow configuration to use MinIO as S3 backend
+      MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
+      AWS_ACCESS_KEY_ID: admin  # MinIO credentials
       AWS_SECRET_ACCESS_KEY: supersecret
+      MLFLOW_S3_IGNORE_TLS: true
     ports:
-      - "8087:8087"  # El puerto en el que MLflow estará disponible
-    depends_on:
-      - minio
+      - "8087:8087"  # MLFlow port
+    depends_on: # First it builds these containers to create MLFlow
+      - s3
       - mysql
-    # The name of the bucket in minio is called project2bucket
+    # 1. Mysql credentials as mention above
+    # 2. The name of the bucket in MinIO is called project2bucket 
+    #    (it depends on your bucket name the way you put this part). 
+    #    Remember first to create the bucket or an error will appear!!!!
     command: >
       mlflow server 
       --backend-store-uri mysql://root:airflow@mysql:3306/project_2 
-      --default-artifact-root s3://project2bucket/artifacts 
+      --default-artifact-root s3://project2bucket
       --host 0.0.0.0 
       --port 8087
       --serve-artifacts
     restart: always
     volumes:
     - ./docker/mlflow/code:/mlflow_code
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8087/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       project_network:
-        ipv4_address: "10.56.1.23"  # Asegúrate de que la dirección IP esté dentro de tu rango de red definido y sea única
+        ipv4_address: "10.56.1.23"  # Unique network number
 
   jupyter:
     build: ./docker/jupyter
     container_name: jupyter
     environment:
-      # Configura MLflow para usar MinIO como el backend de S3
-      MLFLOW_S3_ENDPOINT_URL: http://minio:8083  # Asegúrate de que esto coincida con el nombre del servicio y el puerto de MinIO en tu docker-compose
-      AWS_ACCESS_KEY_ID: admin  # Deben coincidir con tus credenciales de MinIO
+      # Jupyter configuration to use MinIO as S3 backend
+      MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
+      AWS_ACCESS_KEY_ID: admin  # MinIO credentials
       AWS_SECRET_ACCESS_KEY: supersecret
     ports:
       - "8088:8088"
@@ -417,11 +430,12 @@ services:
     tty: true
     networks:
       project_network:
-        ipv4_address: "10.56.1.24"  # Asegúrate de que la dirección IP esté dentro de tu rango de red definido y sea única
+        ipv4_address: "10.56.1.24"  # Unique network number
 
 volumes:
   postgres-db-volume:
   mysql_data:
+  minio_data:
 
 networks:
   project_network:

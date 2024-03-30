@@ -3,31 +3,32 @@ import pymysql
 
 app = FastAPI()
 
-# Configura los detalles de conexión a la base de datos
-DB_HOST = "10.56.1.20"  # Usa la dirección IP del servicio MySQL en tu red Docker
+# Database setup
+DB_HOST = "10.56.1.20"  # MySQL IP Docker Network
 DB_USER = "root"
-DB_PASSWORD = "airflow"  # O la que hayas configurado
+DB_PASSWORD = "airflow"  
 DB_NAME = "project_2"
 
 @app.get("/")
 async def root():
     return {"Project 2": "Hello World!"}
 
+# Showing data
 @app.get("/data")
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
                                  user=DB_USER,
                                  password=DB_PASSWORD,
                                  db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # Usa DictCursor para obtener los resultados como diccionarios
+                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
     try:
         with connection.cursor() as cursor:
-            # Asegúrate de que la consulta SQL refleje tu estructura de base de datos y nombre de tabla reales
-            cursor.execute("SELECT * FROM project_2.dataset_covertype;")  # Reemplaza `table` con el nombre real de tu tabla
-            result = cursor.fetchall()  # fetchall() recupera todos los resultados de la consulta
+            query = "SELECT * FROM project_2.dataset_covertype;"
+            cursor.execute(query)
+            result = cursor.fetchall()  # fetchall() retrieve all the results
         return {"data": result}
     except Exception as e:
-        # En caso de error, retorna el mensaje de error
+        # if error it shows the reason why
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         connection.close()
