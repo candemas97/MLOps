@@ -31,7 +31,7 @@ async def fetch_data():
                                  cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
     try:
         with connection.cursor() as cursor:
-            query = "SELECT * FROM project_2.dataset_covertype;"
+            query = "SELECT * FROM project_2.dataset_covertype LIMIT 5;"
             cursor.execute(query)
             result = cursor.fetchall()  # fetchall() retrieve all the results
         return {"data": result}
@@ -45,5 +45,10 @@ async def fetch_data():
 @app.post("/prediction_cover_type/", tags=["Prediction Model"])
 async def predict(new_observation: models_api.COVERTYPE):
     response = prediction.assign_cover_type(new_observation.model_dump())
-    print(f"\n\n\n{response}, original: {type(response)}, obligado: {type(list(response))}\n\n\n")
-    return {"cover_type": list(response)}
+    # Extract python variables (not numpy)
+    if len(response) == 1:
+        final_response = response.item()
+    else:
+        final_response = [response[i].item() for i, _ in enumerate(response)]
+
+    return {"cover_type": final_response}

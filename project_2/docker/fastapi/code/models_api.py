@@ -26,7 +26,7 @@ The purpose of this API is to use the ML model that was trained and saved with M
 The possible API are:
 
 * Test API.
-* Watch all training data
+* Watch all columns from training data and 5 rows of data
 * Predict using the saved model
 """
 
@@ -37,7 +37,7 @@ tags_metadata = [
     ),
     dict(
         name="Looking at the training data",
-        description="Shows the training data stored in MySQL database",
+        description="Shows the training data stored in MySQL database (just 5 rows)",
     ),
     dict(
         name="Prediction Model",

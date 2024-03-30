@@ -34,7 +34,7 @@ def assign_cover_type(dictionary_to_predict: dict) -> int:
 
     example_test = X_test #.iloc[0].to_frame().T
 
-    return list(loaded_model.predict(example_test))
+    return loaded_model.predict(example_test)
 
 if __name__ == "__main__":
     observation = {
