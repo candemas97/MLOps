@@ -17,9 +17,9 @@ def read_data_from_api(group: int) ->json:
     response = requests.request("GET", f"http://10.43.101.149/data?group_number={group}")
     print(response)
     data_json = json.loads(response.content.decode('utf-8'))
-    # Save data as a file in the folder
-    with open(f"{os.getcwd()}/dags/corrida_{data_json['batch_number']}.json", 'w') as jf: 
-        json.dump(response.json(), jf, ensure_ascii=False, indent=2)
+    # Save data as a file in the folder (uncomment if you need it)
+    # with open(f"{os.getcwd()}/dags/corrida_{data_json['batch_number']}.json", 'w') as jf: 
+    #     json.dump(response.json(), jf, ensure_ascii=False, indent=2)
     return data_json
 
 def save_json_to_sql(**context) -> None:
@@ -44,13 +44,14 @@ def save_json_to_sql(**context) -> None:
 
 
 
-# Creación del DAG y ejecución del mismo
+# DAG creation and execution
 
 """
 Create dag and set the schedule interval
 """
 dag = DAG(
-    "Cover-Type-Prediction",
+    "01-Only-Read-Data-From-API-Cover-Type",
+    description='DAG that read from API and save in MySQL',
     start_date=datetime(2024, 3, 25, 0, 0, 00000),
     schedule_interval="@once",  
     catchup=False,

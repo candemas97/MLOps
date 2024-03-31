@@ -50,8 +50,9 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.6.0}
-  # build: .
+  # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.6.0}
+  build: 
+    context: ./docker/airflow
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -100,31 +101,9 @@ services:
       retries: 5
       start_period: 5s
     restart: always
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.21"
-  
-  mysql:
-    # Service Name
-    image: mysql:latest  # Docker image for SQL Container
-    container_name: mysql
-    ports:
-      - "3307:3306"  # Mapping ports
-    environment:
-      MYSQL_ROOT_PASSWORD: airflow  # Root password
-      MYSQL_DATABASE: project_2  # MySQL database
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]  # Verify health
-      interval: 10s  # Frecuency of health verification
-      timeout: 5s  # Max wait for health verification
-      retries: 3  # Number of retries for health verification
-      start_period: 10s  # Waiting time before health verification
-    restart: always  
-    networks:
-      project_network:
-        ipv4_address: "10.56.1.20"
 
   redis:
     image: redis:latest
@@ -137,7 +116,7 @@ services:
       retries: 50
       start_period: 30s
     restart: always
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.19"
 
@@ -157,7 +136,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.18"
 
@@ -175,7 +154,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.17"
 
@@ -200,7 +179,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.16"
 
@@ -218,7 +197,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.15"
 
@@ -315,7 +294,7 @@ services:
       - bash
       - -c
       - airflow
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.12"
 
@@ -340,9 +319,33 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
+    networks: # Added manually according to created network
       project_network:
         ipv4_address: "10.56.1.11"
+  
+  ############### NEW INFO ADDITIONAL TO AIRFLOW STANDARD INFO ############################
+
+  mysql:
+    # Service Name
+    image: mysql:latest  # Docker image for SQL Container
+    container_name: mysql
+    ports:
+      - "3307:3306"  # Mapping ports
+    environment:
+      MYSQL_ROOT_PASSWORD: airflow  # Root password
+      MYSQL_DATABASE: project_2  # MySQL database
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]  # Verify health
+      interval: 10s  # Frecuency of health verification
+      timeout: 5s  # Max wait for health verification
+      retries: 3  # Number of retries for health verification
+      start_period: 10s  # Waiting time before health verification
+    restart: always  
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.20"
 
   # API for request given by users
   fast_api:
