@@ -30,7 +30,7 @@ After that, follow the next steps:
 |  logs   |  `mkdir -p ./logs`   |
 | plugins | `mkdir -p ./plugins` |
 
-6. If you are working on UNIX, it is necessary to set the following variable for execution.
+6. It is necessary to set the following variable for execution.
 
 ```
 echo -e "AIRFLOW_UID=$(id -u)" > .env
@@ -58,10 +58,12 @@ localhost:8083
 ```
 
 2. Add credentials
+
 ```
 Username: admin
 Password: supersecret
 ```
+
 3. Go to Administrator >> Buckets >> Create Bucket
 
 > I already have a created bucket, that's way you see a bucket called "project2bucket"
@@ -70,6 +72,21 @@ Password: supersecret
 
 4. In the "Bucket Name" type the name you want your bucket to have.
 5. Press Create Bucket and now you have the bucket name that must be used in all your code
+
+### 2. StreamLit
+
+1. In your browser, go to:
+
+```
+localhost:8082
+```
+
+2. No extra steps needed in the set up.
+
+> [!NOTE]
+>
+> - Running this app you will have access to the links of: MLFlow, FastAPI, Airflow and MinIO.
+> - Next steps of the set up are necessaries but not mandatories if you run the StreamLit Instance
 
 ### 2. MLFlow
 
@@ -100,10 +117,12 @@ localhost:8080
 ```
 
 2. Add credentials
+
 ```
 Username: admin
 Password: supersecret
 ```
+
 3. No extra steps needed in the set up.
 
 ### 5. (Optional) Jupyter
@@ -139,9 +158,10 @@ localhost:8088
 
 0. Go to Airflow
 
-There are two ways to train the model: using two dags (01-Only-Read-Data-From-API-Cover-Type and 02-Only-Prepare-And-Train-Model-Cover-Type) or just one (All-In-One-Read-Prepare-And-Train-Cover-Type). 
+There are two ways to train the model: using two dags (01-Only-Read-Data-From-API-Cover-Type and 02-Only-Prepare-And-Train-Model-Cover-Type) or just one (All-In-One-Read-Prepare-And-Train-Cover-Type).
 
-1. If you want to use the first option you need to: 
+1. If you want to use the first option you need to:
+
    - Run 01-Only-Read-Data-From-API-Cover-Type in the left buttom.
 
    ![Image 3](./images/img3.png)
@@ -168,7 +188,6 @@ There are two ways to train the model: using two dags (01-Only-Read-Data-From-AP
 
 4. Your model is ready to be used
 
-
 ### Predicting using FastAPI
 
 0. Go to FastAPI
@@ -178,18 +197,18 @@ There are two ways to train the model: using two dags (01-Only-Read-Data-From-AP
 
 ```json
 {
-        "var_0": [3448],
-        "var_1": [311],
-        "var_2": [25],
-        "var_3": [127],
-        "var_4": [1],
-        "var_5": [1518],
-        "var_6": [146],
-        "var_7": [214],
-        "var_8": [204],
-        "var_9": [1869],
-        "var_10": ["Neota"],
-        "var_11": ["C8772"]
+  "var_0": [3448],
+  "var_1": [311],
+  "var_2": [25],
+  "var_3": [127],
+  "var_4": [1],
+  "var_5": [1518],
+  "var_6": [146],
+  "var_7": [214],
+  "var_8": [204],
+  "var_9": [1869],
+  "var_10": ["Neota"],
+  "var_11": ["C8772"]
 }
 ```
 
