@@ -21,7 +21,7 @@ image_minio = Image.open("./images/minio.png")
 image_mlflow = Image.open("./images/mlflow.png")
 image_fastapi = Image.open("./images/fastapi.png")
 
-IP = "localhost" #"10.43.101.158"  # "localhost"
+IP = "localhost"  # "10.43.101.158"  # "localhost"
 
 url_request_api = f"http://{IP}:8085/prediction_cover_type/"
 
@@ -78,7 +78,7 @@ with st.container():
             unsafe_allow_html=True,
         )
     with f2c3:
-        url = f"http://{IP}:8089"
+        url = f"http://{IP}:8087"
         # texto = f"[MLFlow]({url})"
         text = "MLFlow"
         st.markdown(
