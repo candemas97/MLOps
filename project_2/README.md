@@ -13,9 +13,9 @@ After that, follow the next steps:
 3. Open a new terminal in your current folder
 4. Add the following line in your new terminal: `cd project_2`. This will allow you to be in the current assignment (**project_2**) because the terminal, by default, takes the main folder as the path.
 
-   > [!NOTE]
-   >
-   > If you only download the folder **project_2** you can skip this step (step 4)
+> [!NOTE]
+>
+> If you only download the folder **project_2** you can skip this step (step 4)
 
 5. You should have three different folders needed: `dags`, `logs`, `plugins` if you do not have any of them you should run the following lines in your terminal:
 
@@ -222,3 +222,18 @@ It is needed to:
 1. Read data from an external API using Airflow
 2. Training a model from Airflow to use MLFlow and to save the models and artifacts in MySQL and MinIO.
 3. Predicting an outcome from FastAPI using the MLFlow productionized model.
+
+## System Architecture
+
+![Image 7](./images/architecture.png)
+
+The explanation of the system architecture is presented below:
+
+1. Data was extracted through requests to the provided API using Airflow, and subsequently, this data was added to a MySQL database.
+2. Subsequently, a query is made to the SQL table from the database, using Airflow to then send this data to MLFlow and train the model.
+3. After the model is trained, the model information and artifacts are saved in MinIO and MySQL.
+4. Finally, the best model generated with MLFlow is employed to make predictions with new data through FastAPI.
+
+> [!NOTE]
+>
+> Streamlit is used as a graphical interface with the user to display the above in a friendly manner.
