@@ -25,7 +25,7 @@ def assign_cover_type(dictionary_to_predict: dict) -> int:
     os.environ["AWS_SECRET_ACCESS_KEY"] = "supersecret"
 
     # connect to mlflow
-    mlflow.set_tracking_uri("http://mlflow:8089")  # "http://mlflow:8087" - for all except VM Javeriana
+    mlflow.set_tracking_uri("http://mlflow:8087")  # "http://mlflow:8087" - for all except VM Javeriana
 
     model_name = "modelo1"
 

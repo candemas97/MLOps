@@ -387,7 +387,7 @@ services:
       MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
       AWS_ACCESS_KEY_ID: admin  # MinIO credentials
       AWS_SECRET_ACCESS_KEY: supersecret
-      MLFLOW_S3_IGNORE_TLS: true
+      # MLFLOW_S3_IGNORE_TLS: true # This is not needed
     ports:
       - "8087:8087"  # MLFlow port
     depends_on: # First it builds these containers to create MLFlow

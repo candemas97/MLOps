@@ -1,9 +1,12 @@
+###############################################
+# Here you can find the way how to build to later push to docker hub
+###############################################
+
 version: '3'
 
 services:
 
   inference:
-      image: candemas/fastapirepo
       container_name: inference
       build: .
       ports:

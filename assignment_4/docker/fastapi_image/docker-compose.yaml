@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  inference:
+      image: candemas/fastapirepo:finalinference
+      container_name: inference
+      ports:
+        - '8081:8081'
+      restart: always
+      networks:
+      - network1
+
+networks:
+  # We use external network because we are using the data given by the "project 2" who has their own network.
+  # First you need to identify the network name with the following command: `docker network ls`
+  # Then add the network name after "name" and add "external" to "true"
+  # This will make understand this docker compose that you are using and external network that is available
+  network1:
+      name: project_2_project_network
+      external: true
