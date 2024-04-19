@@ -3,7 +3,7 @@ version: '3'
 services:
 
   locustmaster:
-    image: locustio/locust
+    # image: locustio/locust
     container_name: locustmaster
     build: .
     ports:
@@ -15,7 +15,7 @@ services:
       - network1
   
   locustworker:
-    image: locustio/locust
+    # image: locustio/locust
     container_name: locustworker
     build: .
     volumes:
