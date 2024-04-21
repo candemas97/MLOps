@@ -43,6 +43,22 @@ docker-compose up
 13. Wait till all the images load.
 14. Go to your browser and (if you are running this in your local machine) got to `localhost:8086`
 
+> [!IMPORTANT]
+>
+> Next steps corresponds to the Unit test. We recommend running this when you do not have
+
+15. If you want to run the Unit test Go back to `docker`
+16. Go to `tests`
+17. Create and run the docker image:
+
+```
+docker-compose up --build
+```
+
+18. Watch results in the terminal, you should see something like this:
+
+![Image -1](./images/img-1.png)
+
 ## Running the Assignment
 
 1. Press `New`
@@ -61,6 +77,9 @@ docker-compose up
 - Create a docker-compose.yaml that allows you to use the published image.
 - Create a different docker-compose.yaml that allows you to perform load testing on your inference image (use Locust).
 - Limit the resources of your inference container as much as possible so that it can handle 10,000 requests.
+
+**Bonus**
+Create unit tests that allow you to validate the correct operation of your inference image.
 
 ## What was done to solve it
 
@@ -99,3 +118,7 @@ deploy:
         cpus: '0.25'
         memory: 200M
 ```
+
+**Bonus**
+
+To do the unit tests, the file `test_main.py` was created, you can find it in `docker/tests/code/` and run it as mention before

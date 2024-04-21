@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  test_service:
+      container_name: test_service
+      build: .
+      volumes:
+        - ./code/test_main.py:/test_main.py
+      restart: always
+      network_mode: host
