@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  fastapi_for_pulling_data:
+    build: .
+    container_name: fastapi_for_pulling_data
+    ports:
+      - '80:80'
+    volumes:
+      - ./Diabetes:/Diabetes
+      - ./code/main_reading_data.py:/main_reading_data.py
+    restart: always
