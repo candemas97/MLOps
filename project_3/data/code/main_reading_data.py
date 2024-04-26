@@ -50,6 +50,9 @@ def get_batch_data(batch_number: int, batch_size: int = batch_size):
     random_data = random.sample(data[start_index:end_index], batch_size)
     return random_data
 
+if os.path.isdir(f"/Diabetes/timestamp") == False:
+    os.mkdir(f"/Diabetes/timestamp")
+
 
 if os.path.isfile("/Diabetes/timestamp/timestamps.json"):
     # Load JSON data in the dictionary

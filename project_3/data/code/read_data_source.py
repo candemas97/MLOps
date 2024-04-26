@@ -25,13 +25,10 @@ df_provicional = df.sample(frac=1, random_state=42)
 df_train, df_validation, df_test = np.split(df_provicional, [int(train_split * len(df_provicional)), int((train_split+val_split) * len(df_provicional))])
 
 print(len(df_train))
-df_train.to_csv("../Diabetes/diabetes_train.csv")
-df_train.head()
+df_train.to_csv("../Diabetes/diabetes_train.csv", index=False)
 
 print(len(df_validation))
-df_validation.to_csv("../Diabetes/diabetes_val.csv")
-df_validation.head()
+df_validation.to_csv("../Diabetes/diabetes_val.csv", index=False)
 
 print(len(df_test))
-df_test.to_csv("../Diabetes/diabetes_test.csv")
-df_test.head()
+df_test.to_csv("../Diabetes/diabetes_test.csv", index=False)
