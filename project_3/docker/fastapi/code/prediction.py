@@ -1,8 +1,25 @@
 import pandas as pd
 import os
 import mlflow
+import sqlalchemy
 
-def assign_cover_type(dictionary_to_predict: dict) -> int:
+def save_user_input_and_model_prediction(input_: pd.DataFrame, y_pred) -> None:
+    """Upload data that was used to predict to SQL
+
+    Args:
+        input_ (pd.DataFrame): Data that was added by the user
+        y_pred: Model prediction according to user input
+    """
+
+    y_pred = pd.DataFrame(y_pred, columns=["prediction_readmitted"])
+    df_upload_predictions = pd.concat([input_, y_pred], axis=1)
+    # Connect to MySQL
+    engine = sqlalchemy.create_engine('mysql://root:airflow@mysql:3306/project_3')
+
+    # Save data, if exits append into the current table
+    df_upload_predictions.to_sql('input_and_prediction_database', con=engine, if_exists='append', index=False)
+
+def will_be_readmitted(dictionary_to_predict: dict) -> int:
     """Predict Cover Type
 
     Args:
@@ -12,7 +29,7 @@ def assign_cover_type(dictionary_to_predict: dict) -> int:
         int: Prediction of the model
     """
     X_test = pd.DataFrame(dictionary_to_predict)
-    X_test.columns = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"]
+    X_test.columns = ['race', 'gender', 'age', 'admission_type_id', 'discharge_disposition_id', 'admission_source_id', 'time_in_hospital', 'num_lab_procedures', 'num_procedures', 'num_medications', 'number_outpatient', 'number_emergency', 'number_inpatient', 'number_diagnoses', 'metformin', 'repaglinide', 'nateglinide', 'chlorpropamide', 'glimepiride', 'acetohexamide', 'glipizide', 'glyburide', 'tolbutamide', 'pioglitazone', 'rosiglitazone', 'acarbose', 'miglitol', 'troglitazone', 'tolazamide', 'examide', 'citoglipton', 'insulin', 'glyburide-metformin', 'glipizide-metformin', 'glimepiride-pioglitazone', 'metformin-rosiglitazone', 'metformin-pioglitazone', 'change', 'diabetesMed', 'diag_1_group']
 
     # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "9000"
     # WE ARE ALSO TAKING THE NETWORK VALUE NEVERTHELESS YOU CAN USE THE CONTEINER NAME (IN OUR CASE S3)
@@ -32,24 +49,56 @@ def assign_cover_type(dictionary_to_predict: dict) -> int:
     # Load model as a PyFuncModel.
     loaded_model = mlflow.pyfunc.load_model(model_uri=model_production_uri)
 
-    example_test = X_test #.iloc[0].to_frame().T
+    y_pred = loaded_model.predict(X_test)
 
-    return loaded_model.predict(example_test)
+    save_user_input_and_model_prediction(X_test, y_pred)
+
+    return y_pred
 
 if __name__ == "__main__":
     observation = {
-        "var_0": [3448],
-        "var_1": [311],
-        "var_2": [25],
-        "var_3": [127],
-        "var_4": [1],
-        "var_5": [1518],
-        "var_6": [146],
-        "var_7": [214],
-        "var_8": [204],
-        "var_9": [1869],
-        "var_10": ["Neota"],
-        "var_11": ["C8772"]
-    }
+    "race": ["Caucasian"],
+    "gender": ["Female"],
+    "age": ["High level"],
+    "admission_type_id": [2],
+    "discharge_disposition_id": [1],
+    "admission_source_id": [1],
+    "time_in_hospital": [10.0],
+    "num_lab_procedures": [36.0],
+    "num_procedures": [3.0],
+    "num_medications": [16.0],
+    "number_outpatient": [0.0],
+    "number_emergency": [0.0],
+    "number_inpatient": [1.0],
+    "number_diagnoses": [5.0],
+    "metformin": ["No"],
+    "repaglinide": ["No"],
+    "nateglinide": ["No"],
+    "chlorpropamide": ["No"],
+    "glimepiride": ["No"],
+    "acetohexamide": ["No"],
+    "glipizide": ["No"],
+    "glyburide": ["No"],
+    "tolbutamide": ["No"],
+    "pioglitazone": ["No"],
+    "rosiglitazone": ["No"],
+    "acarbose": ["No"],
+    "miglitol": ["No"],
+    "troglitazone": ["No"],
+    "tolazamide": ["No"],
+    "examide": ["No"],
+    "citoglipton": ["No"],
+    "insulin": ["Steady"],
+    "glyburide_metformin": ["No"],
+    "glipizide_metformin": ["No"],
+    "glimepiride_pioglitazone": ["No"],
+    "metformin_rosiglitazone": ["No"],
+    "metformin_pioglitazone": ["No"],
+    "change": ["No"],
+    "diabetesMed": ["Yes"],
+    "diag_1_group": ["Other"],
+    "readmitted": ["NO"]
+}
 
-    print(assign_cover_type(observation))
+
+    print(will_be_readmitted(observation))
