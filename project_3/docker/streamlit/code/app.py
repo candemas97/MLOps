@@ -27,7 +27,7 @@ url_request_api = f"http://{IP}:8085/prediction-readmission/"
 
 # First Container
 with st.container():
-    st.title("Welcome to MLOps Project #2! 👋")
+    st.title("Welcome to MLOps Project #3! 🚀")
 
 # Second Container
 with st.container():
@@ -104,14 +104,14 @@ with st.container():
     var03 = col1.text_input("admission_type_id", value=2)
     var04 = col1.text_input("discharge_disposition_id", value=1)
     var05 = col1.text_input("admission_source_id", value=1)
-    var06 = col1.number_input("time_in_hospital", min_value=-10000.0, value=10.0)
-    var07 = col1.number_input("num_lab_procedures", min_value=-10000.0, value=36.0)
-    var08 = col1.number_input("num_procedures", min_value=-10000.0, value=3.0)
-    var09 = col1.number_input("num_medications", min_value=-10000.0, value=16.0)
-    var10 = col1.number_input("number_outpatient", min_value=-10000.0, value=0.0)
-    var11 = col1.number_input("number_emergency", min_value=-10000.0, value=0.0)
-    var12 = col1.number_input("number_inpatient", min_value=-10000.0, value=1.0)
-    var13 = col1.number_input("number_diagnoses", min_value=-10000.0, value=5.0)
+    var06 = col1.number_input("time_in_hospital", min_value=-10000, value=10)
+    var07 = col1.number_input("num_lab_procedures", min_value=-10000, value=36)
+    var08 = col1.number_input("num_procedures", min_value=-10000, value=3)
+    var09 = col1.number_input("num_medications", min_value=-10000, value=16)
+    var10 = col1.number_input("number_outpatient", min_value=-10000, value=0)
+    var11 = col1.number_input("number_emergency", min_value=-10000, value=0)
+    var12 = col1.number_input("number_inpatient", min_value=-10000, value=1)
+    var13 = col1.number_input("number_diagnoses", min_value=-10000, value=5)
     var14 = col2.text_input("metformin", value="No")
     var15 = col2.text_input("repaglinide", value="No")
     var16 = col2.text_input("nateglinide", value="No")
@@ -181,10 +181,9 @@ datos_json = {
     "metformin_pioglitazone": [var36],
     "change": [var37],
     "diabetesMed": [var38],
-    "diag_1_group": [var39]
+    "diag_1_group": [var39],
     # "readmitted": [var40]
 }
-
 
 
 with st.container():

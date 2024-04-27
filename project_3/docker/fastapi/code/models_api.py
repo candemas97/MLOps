@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from enum import Enum
 
+
 class READMITTED(BaseModel):
     race: list[str] = ["Caucasian"]
     gender: list[str] = ["Female"]
@@ -8,14 +9,14 @@ class READMITTED(BaseModel):
     admission_type_id: list[str] = ["2"]
     discharge_disposition_id: list[str] = ["1"]
     admission_source_id: list[str] = ["1"]
-    time_in_hospital: list[float] = [10.0]
-    num_lab_procedures: list[float] = [36.0]
-    num_procedures: list[float] = [3.0]
-    num_medications: list[float] = [16.0]
-    number_outpatient: list[float] = [0.0]
-    number_emergency: list[float] = [0.0]
-    number_inpatient: list[float] = [1.0]
-    number_diagnoses: list[float] = [5.0]
+    time_in_hospital: list[int] = [10]
+    num_lab_procedures: list[int] = [36]
+    num_procedures: list[int] = [3]
+    num_medications: list[int] = [16]
+    number_outpatient: list[int] = [0]
+    number_emergency: list[int] = [0]
+    number_inpatient: list[int] = [1]
+    number_diagnoses: list[int] = [5]
     metformin: list[str] = ["No"]
     repaglinide: list[str] = ["No"]
     nateglinide: list[str] = ["No"]
@@ -43,7 +44,6 @@ class READMITTED(BaseModel):
     diabetesMed: list[str] = ["Yes"]
     diag_1_group: list[str] = ["Other"]
     # readmitted: list[str] = ["NO"]
-
 
 
 description_API = """
