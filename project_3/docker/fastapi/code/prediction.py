@@ -14,7 +14,12 @@ def save_user_input_and_model_prediction(input_: pd.DataFrame, y_pred) -> None:
     y_pred = pd.DataFrame(y_pred, columns=["prediction_readmitted"])
     df_upload_predictions = pd.concat([input_, y_pred], axis=1)
     # Connect to MySQL
-    engine = sqlalchemy.create_engine('mysql://root:airflow@mysql:3306/project_3')
+    DB_HOST = "10.43.101.158"
+    DB_USER = "root"
+    DB_PASSWORD = "airflow"
+    DB_NAME = "project_3"
+    PORT = 3306
+    engine = sqlalchemy.create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{PORT}/{DB_NAME}')
 
     # Save data, if exits append into the current table
     df_upload_predictions.to_sql('input_and_prediction_database', con=engine, if_exists='append', index=False)
@@ -31,15 +36,15 @@ def will_be_readmitted(dictionary_to_predict: dict) -> int:
     X_test = pd.DataFrame(dictionary_to_predict)
     X_test.columns = ['race', 'gender', 'age', 'admission_type_id', 'discharge_disposition_id', 'admission_source_id', 'time_in_hospital', 'num_lab_procedures', 'num_procedures', 'num_medications', 'number_outpatient', 'number_emergency', 'number_inpatient', 'number_diagnoses', 'metformin', 'repaglinide', 'nateglinide', 'chlorpropamide', 'glimepiride', 'acetohexamide', 'glipizide', 'glyburide', 'tolbutamide', 'pioglitazone', 'rosiglitazone', 'acarbose', 'miglitol', 'troglitazone', 'tolazamide', 'examide', 'citoglipton', 'insulin', 'glyburide-metformin', 'glipizide-metformin', 'glimepiride-pioglitazone', 'metformin-rosiglitazone', 'metformin-pioglitazone', 'change', 'diabetesMed', 'diag_1_group']
 
-    # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "9000"
+    # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "8084"
     # WE ARE ALSO TAKING THE NETWORK VALUE NEVERTHELESS YOU CAN USE THE CONTEINER NAME (IN OUR CASE S3)
 
-    os.environ['MLFLOW_S3_ENDPOINT_URL'] = "http://10.56.1.22:9000" # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "9000"
+    os.environ['MLFLOW_S3_ENDPOINT_URL'] = "http://10.43.101.158:8084" # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "8084"
     os.environ['AWS_ACCESS_KEY_ID'] = 'admin'
     os.environ['AWS_SECRET_ACCESS_KEY'] = 'supersecret'
 
     # connect to mlflow
-    mlflow.set_tracking_uri("http://mlflow:8087") # "http://0.0.0.0:8087")
+    mlflow.set_tracking_uri("http://10.43.101.158:8087") # "http://0.0.0.0:8087")
 
     model_name = "modelo1"
 

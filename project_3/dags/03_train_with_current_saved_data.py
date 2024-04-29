@@ -21,13 +21,14 @@ from sklearn.model_selection import GridSearchCV
 
 from sklearn.ensemble import RandomForestClassifier
 
-def read_clean_data(DB_HOST: str, DB_USER: str, DB_PASSWORD: str, DB_NAME: str) -> json:
+def read_clean_data(DB_HOST: str, DB_USER: str, DB_PASSWORD: str, DB_NAME: str, PORT: int) -> json:
     """Read data from MySQL where is stored all data 
     @params
     DB_HOST[str]: Database IP
     BD_USER[str]: Database username
     DB_PASSWORD[str]: Database password
     DB_NAME[str]: Database Name
+    PORT[int]: Port
 
     @output
     json: Json with the read data
@@ -36,6 +37,7 @@ def read_clean_data(DB_HOST: str, DB_USER: str, DB_PASSWORD: str, DB_NAME: str) 
                                 user=DB_USER,
                                 password=DB_PASSWORD,
                                 db=DB_NAME,
+                                port=PORT,
                                 cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
@@ -82,15 +84,15 @@ def train_model(**context) -> None:
     search = GridSearchCV(pipe, param_grid, cv=10, n_jobs=2)
 
     # Use MLFlow
-    # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "9000"
+    # YOU MUST TAKE THE API NOT THE WEBAPP IN MY CASE IT WAS "http://0.0.0.0:8083" BUT API "8084"
     # WE ARE ALSO TAKING THE NETWORK VALUE NEVERTHELESS YOU CAN USE THE CONTEINER NAME (IN OUR CASE S3)
 
-    os.environ['MLFLOW_S3_ENDPOINT_URL'] = "http://10.56.1.22:9000" 
+    os.environ['MLFLOW_S3_ENDPOINT_URL'] = "http://10.43.101.158:8084" # 9000" 
     os.environ['AWS_ACCESS_KEY_ID'] = 'admin'
     os.environ['AWS_SECRET_ACCESS_KEY'] = 'supersecret'
 
     # connect to mlflow
-    mlflow.set_tracking_uri("http://mlflow:8087") # "http://0.0.0.0:8087")
+    mlflow.set_tracking_uri("http://10.43.101.158:8087") # "http://0.0.0.0:8087")
     mlflow.set_experiment("mlflow_project_3")
 
     mlflow.sklearn.autolog(log_model_signatures=True, log_input_examples=True, registered_model_name="modelo1")
@@ -122,7 +124,7 @@ t1 = PythonOperator(
     task_id="read_clean_data",
     provide_context=True,
     python_callable=read_clean_data,
-    op_kwargs={"DB_HOST": "10.56.1.20", "DB_USER": "root", "DB_PASSWORD": "airflow", "DB_NAME": "project_3"},
+    op_kwargs={"DB_HOST": "10.43.101.158", "DB_USER": "root", "DB_PASSWORD": "airflow", "DB_NAME": "project_3", "PORT": 3306},
     dag=dag,
 )
 

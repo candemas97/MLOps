@@ -53,18 +53,18 @@ def preprocess_data() -> None:
     """
     # Rad Data for train, val and test
 
-    DB_HOST = "10.56.1.20"  # Using MySQL IP address (ipv4_address in docker-compose)
+    DB_HOST = "10.43.101.158" # "localhost" "10.43.101.158"  # Using INTERNET!
     DB_USER = "root"
-    DB_PASSWORD = "airflow"
+    DB_PASSWORD = "airflow" 
     DB_NAME = "project_3"
+    PORT= 3306
 
-    connection = pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        db=DB_NAME,
-        cursorclass=pymysql.cursors.DictCursor,
-    )  # Using DictCursos to obtain results as dictionaries
+    connection = pymysql.connect(host=DB_HOST,
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         ## Train
         with connection.cursor() as cursor:
@@ -275,11 +275,11 @@ def preprocess_data() -> None:
     df_test_final = pd.concat([X_test, pd.DataFrame(y_test)], axis=1)
 
     # Connect to MySQL
-    engine = sqlalchemy.create_engine("mysql://root:airflow@mysql:3306/project_3")
+    engine = sqlalchemy.create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{PORT}/{DB_NAME}')
 
     # Save data, if exits append into the current table (TRAIN)
     df_train_final.to_sql(
-        "final_train_database", con=engine, if_exists="append", index=False
+        "final_train_database", con=engine, if_exists="replace", index=False
     )
     df_val_final.to_sql(
         "final_val_database", con=engine, if_exists="replace", index=False

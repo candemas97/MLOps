@@ -4,7 +4,7 @@ import os
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-from sqlalchemy import create_engine
+import sqlalchemy
 import pandas as pd
 
 def read_data_from_api() ->json:
@@ -35,7 +35,12 @@ def save_json_to_sql(**context) -> None:
     data = pd.DataFrame(data_json["data"])
 
     # Connect to MySQL
-    engine = create_engine('mysql://root:airflow@mysql:3306/project_3')
+    DB_HOST = "10.43.101.158"
+    DB_USER = "root"
+    DB_PASSWORD = "airflow"
+    DB_NAME = "project_3"
+    PORT = 3306
+    engine = sqlalchemy.create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{PORT}/{DB_NAME}')
 
     # Save data, if exits append into the current table
     data.to_sql('train_database', con=engine, if_exists='append', index=False)

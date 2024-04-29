@@ -330,7 +330,9 @@ services:
     image: mysql:latest  # Docker image for SQL Container
     container_name: mysql
     ports:
-      - "3307:3306"  # Mapping ports
+      - "3306:3306"  # Mapping ports
+    expose: 
+      - "3306"
     environment:
       MYSQL_ROOT_PASSWORD: airflow  # Root password
       MYSQL_DATABASE: project_3  # MySQL database
@@ -363,14 +365,14 @@ services:
   # MinIO - we call it as s3
   s3:
     container_name: Minio
-    command: server /data --console-address ":8083"
+    command: server /data --console-address ":8083" --address :8084
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=supersecret
     image: quay.io/minio/minio:latest
     ports:
-      - '8083:8083'
-      - '8084:8084'
+      - '8084:8084' # API
+      - '8083:8083' # Browser
     volumes:
       - ./minio_data:/data
     restart: unless-stopped
@@ -384,7 +386,7 @@ services:
     container_name: mlflow
     environment:
       # MLFlow configuration to use MinIO as S3 backend
-      MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
+      MLFLOW_S3_ENDPOINT_URL: http://10.43.101.158:8083 # http://s3:8083  # It must match with the service name and MinIO port
       AWS_ACCESS_KEY_ID: admin  # MinIO credentials
       AWS_SECRET_ACCESS_KEY: supersecret
       # MLFLOW_S3_IGNORE_TLS: true # This is not needed
@@ -399,7 +401,7 @@ services:
     #    Remember first to create the bucket or an error will appear!!!!
     command: >
       mlflow server 
-      --backend-store-uri mysql://root:airflow@mysql:3306/project_3 
+      --backend-store-uri mysql://root:airflow@10.43.101.158:3306/project_3 
       --default-artifact-root s3://project3bucket
       --host 0.0.0.0 
       --port 8087
@@ -421,7 +423,7 @@ services:
     container_name: jupyter
     environment:
       # Jupyter configuration to use MinIO as S3 backend
-      MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
+      MLFLOW_S3_ENDPOINT_URL: http://10.43.101.158:8083  # It must match with the service name and MinIO port
       AWS_ACCESS_KEY_ID: admin  # MinIO credentials
       AWS_SECRET_ACCESS_KEY: supersecret
     ports:
