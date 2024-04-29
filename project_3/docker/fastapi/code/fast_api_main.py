@@ -12,10 +12,11 @@ app = FastAPI(
 )
 
 # Database setup
-DB_HOST = "10.56.1.20"  # MySQL IP Docker Network
+DB_HOST = "10.43.101.158"
 DB_USER = "root"
-DB_PASSWORD = "airflow"  
+DB_PASSWORD = "airflow"
 DB_NAME = "project_3"
+PORT = 3306
 
 @app.get("/", tags=["Testing API"])
 async def root():
@@ -25,10 +26,11 @@ async def root():
 @app.get("/data-train-raw", tags=["Looking at the data"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.train_database LIMIT 5;"
@@ -45,10 +47,11 @@ async def fetch_data():
 @app.get("/data-train-clean", tags=["Looking at the data"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.final_train_database LIMIT 5;"
@@ -65,10 +68,11 @@ async def fetch_data():
 @app.get("/data-validation-raw", tags=["Looking at the data"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.validation_database LIMIT 5;"
@@ -85,10 +89,11 @@ async def fetch_data():
 @app.get("/data-validation-clean", tags=["Looking at the data"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.final_val_database LIMIT 5;"
@@ -105,10 +110,11 @@ async def fetch_data():
 @app.get("/data-test-raw", tags=["Looking at the data"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.test_database LIMIT 5;"
@@ -125,10 +131,11 @@ async def fetch_data():
 @app.get("/data-test-clean", tags=["Looking at the data"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.final_test_database LIMIT 5;"
@@ -157,10 +164,11 @@ async def predict(new_observation: models_api.READMITTED):
 @app.get("/prediction-data", tags=["Predictions saved"])
 async def fetch_data():
     connection = pymysql.connect(host=DB_HOST,
-                                 user=DB_USER,
-                                 password=DB_PASSWORD,
-                                 db=DB_NAME,
-                                 cursorclass=pymysql.cursors.DictCursor)  # DictCursor for results as dictionaries
+                                user=DB_USER,
+                                password=DB_PASSWORD,
+                                db=DB_NAME,
+                                port=PORT,
+                                cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
     try:
         with connection.cursor() as cursor:
             query = "SELECT * FROM project_3.input_and_prediction_database;"
