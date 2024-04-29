@@ -351,7 +351,8 @@ services:
 
   # API for request given by users
   fast_api:
-    build: ./docker/fastapi
+    # build: ./docker/fastapi
+    image: candemas/project3:fastapi
     container_name: fastapi
     ports:
       - '8085:8085'
@@ -382,7 +383,8 @@ services:
 
 
   mlflow:
-    build: ./docker/mlflow  # MLFlow Dockerfile path
+    # build: ./docker/mlflow  # MLFlow Dockerfile path
+    image: candemas/project3:mlflow
     container_name: mlflow
     environment:
       # MLFlow configuration to use MinIO as S3 backend
@@ -419,7 +421,8 @@ services:
         ipv4_address: "10.56.1.23"  # Unique network number
 
   jupyter:
-    build: ./docker/jupyter
+    # build: ./docker/jupyter
+    image: candemas/project3:jupyter
     container_name: jupyter
     environment:
       # Jupyter configuration to use MinIO as S3 backend
@@ -438,7 +441,8 @@ services:
         ipv4_address: "10.56.1.24"  # Unique network number
 
   streamlit:
-    build: ./docker/streamlit
+    # build: ./docker/streamlit
+    image: candemas/project3:streamlit
     container_name: streamlit
     ports:
       - "8082:8082"
