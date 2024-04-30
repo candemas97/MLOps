@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o komposefiles/ --volumes hostPath
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: s3
+  name: s3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: s3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o komposefiles/ --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/project-3-network: "true"
+        io.kompose.service: s3
+    spec:
+      containers:
+        - args:
+            - server
+            - /data
+            - --console-address
+            - :8083
+            - --address
+            - :8084
+          env:
+            - name: MINIO_ROOT_PASSWORD
+              value: supersecret
+            - name: MINIO_ROOT_USER
+              value: admin
+          image: quay.io/minio/minio:latest
+          name: minio
+          ports:
+            - containerPort: 8084
+            - containerPort: 8083
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: s3-hostpath0
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /home/estudiante/MLOps/project_3/kubernetes/minio_data
+          name: s3-hostpath0
+status: {}
