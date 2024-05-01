@@ -103,7 +103,6 @@ def preprocess_data() -> None:
 
     # Rename columns
     columns_df = [
-        "index",
         "encounter_id",
         "patient_nbr",
         "race",
@@ -170,7 +169,6 @@ def preprocess_data() -> None:
         "A1Cresult",
         "diag_2",
         "diag_3",
-        "index",
     ]
     df_train = df_train.drop(columns=del_columns, axis=1)
     df_validation = df_validation.drop(columns=del_columns, axis=1)
@@ -259,12 +257,12 @@ def preprocess_data() -> None:
         )
         X_val[column] = np.where(
             X_val[column].isin(categorical_counts[grouper].index),
-            "High level",
+            "Group_Data",
             X_val[column],
         )
         X_test[column] = np.where(
             X_test[column].isin(categorical_counts[grouper].index),
-            "High level",
+            "Group_Data",
             X_test[column],
         )
 

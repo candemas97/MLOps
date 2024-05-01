@@ -41,8 +41,8 @@ spec:
           image: quay.io/minio/minio:latest
           name: minio
           ports:
-            - containerPort: 8084
             - containerPort: 8083
+            - containerPort: 8084
           resources: {}
           volumeMounts:
             - mountPath: /data
@@ -50,6 +50,6 @@ spec:
       restartPolicy: Always
       volumes:
         - hostPath:
-            path: /home/estudiante/MLOps/project_3/kubernetes/minio_data
+            path: /home/estudiante/MLOps/project_3/minio_data
           name: s3-hostpath0
 status: {}

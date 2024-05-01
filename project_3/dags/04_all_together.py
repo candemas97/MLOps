@@ -144,7 +144,7 @@ def preprocess_data() -> None:
     print(f"The dataframe has {len(df_test)} rows")
 
     # Rename columns
-    columns_df = ["index",
+    columns_df = [
         "encounter_id", "patient_nbr", "race", "gender", "age", "weight",
         "admission_type_id", "discharge_disposition_id", "admission_source_id",
         "time_in_hospital", "payer_code", "medical_specialty", "num_lab_procedures",
@@ -171,8 +171,7 @@ def preprocess_data() -> None:
                     "max_glu_serum", 
                     "A1Cresult", 
                     "diag_2", 
-                    "diag_3", 
-                    "index"]
+                    "diag_3",]
     df_train = df_train.drop(columns=del_columns, axis=1)
     df_validation = df_validation.drop(columns=del_columns, axis=1)
     df_test = df_test.drop(columns=del_columns, axis=1)
@@ -205,9 +204,9 @@ def preprocess_data() -> None:
                         "number_inpatient",
                         "number_diagnoses",
                         ] 
-    df_train[numerical_variables] = df_train[numerical_variables].astype(float)
-    df_validation[numerical_variables] = df_validation[numerical_variables].astype(float)
-    df_test[numerical_variables] = df_test[numerical_variables].astype(float)
+    df_train[numerical_variables] = df_train[numerical_variables].astype(int)
+    df_validation[numerical_variables] = df_validation[numerical_variables].astype(int)
+    df_test[numerical_variables] = df_test[numerical_variables].astype(int)
 
     # Split X y 
 
@@ -249,8 +248,8 @@ def preprocess_data() -> None:
         categorical_counts = pd.value_counts(X_train[column]) # We based on results given by train
         grouper = (categorical_counts/categorical_counts.sum() * 100).lt(5) # Select the ones with less than 5%
         X_train[column] = np.where(X_train[column].isin(categorical_counts[grouper].index),'Group_Data',X_train[column])
-        X_val[column] = np.where(X_val[column].isin(categorical_counts[grouper].index),'High level',X_val[column])
-        X_test[column] = np.where(X_test[column].isin(categorical_counts[grouper].index),'High level',X_test[column])
+        X_val[column] = np.where(X_val[column].isin(categorical_counts[grouper].index),'Group_Data',X_val[column])
+        X_test[column] = np.where(X_test[column].isin(categorical_counts[grouper].index),'Group_Data',X_test[column])
 
     # SAVING CLEAN MODEL
     # Creating final DataFrame to Upload

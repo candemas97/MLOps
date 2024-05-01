@@ -47,8 +47,10 @@ services:
       - MINIO_ROOT_PASSWORD=supersecret
     image: quay.io/minio/minio:latest
     ports:
-      - '8084:8084' # API
+      # - '8084:8084' # API
       - '8083:8083' # Browser
+    expose: 
+      - 8084
     volumes:
       - ./minio_data:/data
     restart: unless-stopped

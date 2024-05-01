@@ -32,7 +32,7 @@ spec:
             - name: AWS_SECRET_ACCESS_KEY
               value: supersecret
             - name: MLFLOW_S3_ENDPOINT_URL
-              value: http://10.43.101.158:8083
+              value: http://10.43.101.158:8084
           image: candemas/project3:jupyter
           name: jupyter
           ports:

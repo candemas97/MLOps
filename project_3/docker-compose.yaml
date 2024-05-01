@@ -349,9 +349,42 @@ services:
       project_network:
         ipv4_address: "10.56.1.20"
 
+  # # API for request given by users
+  # fast_api:
+  #   # build: ./docker/fastapi
+  #   image: candemas/project3:fastapi
+  #   container_name: fastapi
+  #   ports:
+  #     - '8085:8085'
+  #   volumes:
+  #     - ./docker/fastapi/code/fast_api_main.py:/fast_api_main.py
+  #   restart: always
+  #   networks:
+  #     project_network:
+  #       ipv4_address: "10.56.1.10"
+
+  # MinIO - we call it as s3
+  # s3:
+  #   container_name: Minio
+  #   command: server /data --console-address ":8083" --address :8084
+  #   environment:
+  #     - MINIO_ROOT_USER=admin
+  #     - MINIO_ROOT_PASSWORD=supersecret
+  #   image: quay.io/minio/minio:latest
+  #   ports:
+  #     - '8084:8084' # API
+  #     - '8083:8083' # Browser
+  #   volumes:
+  #     - ./minio_data:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     project_network:
+  #       ipv4_address: "10.56.1.22"
+
+
   mlflow:
-    build: ./docker/mlflow  # MLFlow Dockerfile path
-    # image: candemas/project3:mlflow
+    # build: ./docker/mlflow  # MLFlow Dockerfile path
+    image: candemas/project3:mlflow
     container_name: mlflow
     environment:
       # MLFlow configuration to use MinIO as S3 backend
@@ -361,16 +394,13 @@ services:
       # MLFLOW_S3_IGNORE_TLS: true # This is not needed
     ports:
       - "8087:8087"  # MLFlow port
-    # depends_on: # First it builds these containers to create MLFlow
-    #   - s3
-    #   - mysql
+    depends_on: # First it builds these containers to create MLFlow
+      # - s3
+      - mysql
     # 1. Mysql credentials as mention above
     # 2. The name of the bucket in MinIO is called project3bucket 
     #    (it depends on your bucket name the way you put this part). 
     #    Remember first to create the bucket or an error will appear!!!!
-    depends_on: # First it builds these containers to create MLFlow
-      # - s3 # this must be running first in kubernetes
-      - mysql
     command: >
       mlflow server 
       --backend-store-uri mysql://root:airflow@10.43.101.158:3306/project_3 
@@ -390,6 +420,26 @@ services:
       project_network:
         ipv4_address: "10.56.1.23"  # Unique network number
 
+  jupyter:
+    # build: ./docker/jupyter
+    image: candemas/project3:jupyter
+    container_name: jupyter
+    environment:
+      # Jupyter configuration to use MinIO as S3 backend
+      MLFLOW_S3_ENDPOINT_URL: http://10.43.101.158:8084  # It must match with the service name and MinIO port
+      AWS_ACCESS_KEY_ID: admin  # MinIO credentials
+      AWS_SECRET_ACCESS_KEY: supersecret
+    ports:
+      - "8088:8088"
+    restart: always
+    volumes:
+    - ./docker/jupyter:/jupyter_code
+    stdin_open: true
+    tty: true
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.24"  # Unique network number
+
   streamlit:
     # build: ./docker/streamlit
     image: candemas/project3:streamlit
@@ -406,30 +456,11 @@ services:
     networks:
       project_network:
         ipv4_address: "10.56.1.13"  # Unique network number
-    
-  jupyter:
-    # build: ./docker/jupyter
-    image: candemas/project3:jupyter
-    container_name: jupyter
-    environment:
-      # Jupyter configuration to use MinIO as S3 backend
-      MLFLOW_S3_ENDPOINT_URL: http://10.43.101.158:8083  # It must match with the service name and MinIO port
-      AWS_ACCESS_KEY_ID: admin  # MinIO credentials
-      AWS_SECRET_ACCESS_KEY: supersecret
-    ports:
-      - "8088:8088"
-    restart: always
-    volumes:
-    - ./docker/jupyter:/jupyter_code
-    stdin_open: true
-    tty: true
-    networks:
-      project_network:
-        ipv4_address: "10.56.1.24"  # Unique network number
 
 volumes:
   postgres-db-volume:
   mysql_data:
+  minio_data:
 
 networks:
   project_network:

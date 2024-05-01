@@ -10,12 +10,12 @@ metadata:
   name: s3
 spec:
   ports:
-    - name: "8084"
-      port: 8084
-      targetPort: 8084
     - name: "8083"
       port: 8083
       targetPort: 8083
+    - name: "8084"
+      port: 8084
+      targetPort: 8084
   selector:
     io.kompose.service: s3
 status:
