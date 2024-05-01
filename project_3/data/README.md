@@ -15,10 +15,16 @@ cd code
 
 3. Run the following line:
 
-If yo are in `Linux`
+If you are in `Linux`
 
 ```
 python3 -m read_data_source.py
+```
+
+or
+
+```
+python3 -m read_data_source
 ```
 
 If you are in `Windows`
@@ -46,4 +52,3 @@ cd data
 ```
 docker-compose up
 ```
-
