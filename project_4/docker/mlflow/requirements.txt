@@ -1,0 +1,5 @@
+mlflow
+awscli
+boto3
+pymysql
+mysqlclient
