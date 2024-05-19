@@ -50,7 +50,7 @@ def save_json_to_sql(**context) -> None:
 Create dag and set the schedule interval
 """
 dag = DAG(
-    "01-Only-Read-Data-From-API-Cover-Type",
+    "01-Read-And-Save-Raw-Data-From-API",
     description='DAG that read from API and save in MySQL',
     start_date=datetime(2024, 3, 25, 0, 0, 00000),
     schedule_interval="@once",  

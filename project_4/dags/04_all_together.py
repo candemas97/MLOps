@@ -1,7 +1,9 @@
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator, BranchPythonOperator
-
+from airflow.operators.python import PythonOperator, BranchPythonOperator
+import requests
 import json
+
+import pandas as pd
 
 import os
 from datetime import datetime
@@ -24,6 +26,109 @@ from sklearn.ensemble import RandomForestRegressor
 # Metrics
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
+
+def read_data_from_api(group: int) ->json:
+    """Read data from API given
+    @params
+    group[int]: Corresponds to the group where you belong
+    @utput
+    json: json with the needed data
+    """
+    response = requests.request("GET", f"http://10.43.101.149/data?group_number={group}")
+    print(response)
+    data_json = json.loads(response.content.decode('utf-8'))
+    # Save data as a file in the folder (uncomment if you need it)
+    # with open(f"{os.getcwd()}/dags/corrida_{data_json['batch_number']}.json", 'w') as jf: 
+    #     json.dump(response.json(), jf, ensure_ascii=False, indent=2)
+    return data_json
+
+def save_json_to_sql(**context) -> None:
+    """"
+    Save json read into MySQL
+    """
+    # Read data from previous step
+    data_json = context["task_instance"].xcom_pull(
+        task_ids="read_data_from_api"
+    )
+
+    # Transform JSON into a pd.DataFrame
+    data = pd.DataFrame(data_json["data"])
+
+    # Connect to MySQL
+    engine = sqlalchemy.create_engine('mysql://root:airflow@mysql:3306/project_4')
+
+    # Save data, if exits append into the current table
+    data.to_sql('raw_data', con=engine, if_exists='append', index=False)
+    print("Saved into MySQL!")
+
+def read_data(DB_HOST: str, DB_USER: str, DB_PASSWORD: str, DB_NAME: str, PORT: int) -> json:
+    """
+    Read data from Raw Data
+    """
+    connection = pymysql.connect(host=DB_HOST,
+                             user=DB_USER,
+                             password=DB_PASSWORD,
+                             db=DB_NAME,
+                             cursorclass=pymysql.cursors.DictCursor)  # Using DictCursos to obtain results as dictionaries
+    try:
+        with connection.cursor() as cursor:
+            # Query the database
+            cursor.execute("SELECT * FROM project_4.raw_data;")
+            result = cursor.fetchall()
+        # Convert into a pd.DataFrame
+        df = pd.DataFrame(result)
+    except Exception as e:
+        # If error returns the exact error
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        connection.close()
+    # Show df
+    print(f"The dataframe has {len(df)} rows")
+
+    return df.to_json(orient="records")
+
+    
+def data_processing_and_save(DB_HOST: str, DB_USER: str, DB_PASSWORD: str, DB_NAME: str, PORT: int, **context) -> None:
+    """
+    This step prepare the data and train the model
+    """
+    # Take data from previous step - data as JSON
+    data = context["task_instance"].xcom_pull(task_ids="read_data") 
+    df = pd.read_json(data, orient="records")
+
+    # Removing not needed fields
+    unique_columns_to_use = ["price", "bed", "bath", "acre_lot", "street", "city", "state", "house_size"]
+    df = df[unique_columns_to_use]
+
+    # Delete Nulls
+    ## Putting "" as null 
+    df.replace("", np.nan, inplace=True)
+    df.replace("?", np.nan, inplace=True)
+    df = df.dropna()
+
+    # Division between y and the rest of variables
+    y = df["price"]
+    X = df.drop(columns="price")
+
+    # Split train and test (80% train, 20% test)
+    X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.20, random_state=42)
+    X_val, X_test, y_val, y_test = train_test_split(X_test_val, y_test_val, test_size=0.50, random_state=42)
+
+    # Save data to clean data
+
+    # Creating final DataFrame to Upload
+    df_train_final = pd.concat([X_train, pd.DataFrame(y_train)], axis=1)
+    df_val_final = pd.concat([X_val, pd.DataFrame(y_val)], axis=1)
+    df_test_final = pd.concat([X_test, pd.DataFrame(y_test)], axis=1)
+
+    # Connect to MySQL
+    engine = sqlalchemy.create_engine(f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{PORT}/{DB_NAME}')
+
+    # Save data, if exits append into the current table (TRAIN)
+    df_train_final.to_sql('clean_data_train', con=engine, if_exists='replace', index=False)
+    df_val_final.to_sql('clean_data_val', con=engine, if_exists='replace', index=False)
+    df_test_final.to_sql('clean_data_test', con=engine, if_exists='replace', index=False)
+    print("Saved into MySQL!")
 
 def read_clean_data(DB_HOST: str, DB_USER: str, DB_PASSWORD: str, DB_NAME: str, PORT: int) -> json:
     """Read data from MySQL where is stored all data 
@@ -408,17 +513,62 @@ def training_selecting_best_model_and_evaluate_solution(DB_HOST: str, DB_USER: s
     # Save data, if exits append into the current table
     table_metrics.to_sql(table_name, con=engine, if_exists='append', index=False)
 
+
 # DAG creation and execution
 
 """
 Create dag and set the schedule interval
 """
 dag = DAG(
-    "03-train-or-not-and-evaluate",
-    description='DAG that Train if the conditions are accomplished',
+    "04-All-Together",
+    description='DAG that read from API and save in MySQL',
     start_date=datetime(2024, 3, 25, 0, 0, 00000),
     schedule_interval="@once",  
     catchup=False,
+)
+
+"""
+Task 1: Read Data from API
+"""
+t1 = PythonOperator(
+    task_id="read_data_from_api",
+    provide_context=True,
+    python_callable=read_data_from_api,
+    op_kwargs={"group": 9},
+    dag=dag,
+)
+
+"""
+Task 2: Save data in MySQL
+"""
+t2 = PythonOperator(
+    task_id="save_json_to_sql",
+    provide_context=True,
+    python_callable=save_json_to_sql,
+    dag=dag,
+)
+
+
+"""
+Task 3: Read Stored Data from MySQL
+"""
+t3 = PythonOperator(
+    task_id="read_data",
+    provide_context=True,
+    python_callable=read_data,
+    op_kwargs={"DB_HOST": "mysql", "DB_USER": "root", "DB_PASSWORD": "airflow", "DB_NAME": "project_4", "PORT": 3306},
+    dag=dag,
+)
+
+"""
+Task 4: Prepare and Train the ML Model
+"""
+t4 = PythonOperator(
+    task_id="data_processing_and_save",
+    provide_context=True,
+    python_callable=data_processing_and_save,
+    op_kwargs={"DB_HOST": "mysql", "DB_USER": "root", "DB_PASSWORD": "airflow", "DB_NAME": "project_4", "PORT": 3306},
+    dag=dag,
 )
 
 """
@@ -467,7 +617,6 @@ t7 = PythonOperator(
     dag=dag,
 )
 
-t5 >> check_train
+t1 >> t2 >> t3 >> t4 >> t5 >> check_train
 check_train >> t6
 check_train >> t7
-
