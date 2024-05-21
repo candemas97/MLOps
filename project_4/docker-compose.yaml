@@ -440,22 +440,22 @@ services:
   #     project_network:
   #       ipv4_address: "10.56.1.24"  # Unique network number
 
-  # streamlit:
-  #   build: ./docker/streamlit
-  #   # image: candemas/project3:streamlit
-  #   container_name: streamlit
-  #   ports:
-  #     - "8082:8082"
-  #   restart: always
-  #   volumes:
-  #   - ./images:/images
-  #   - ./docker/streamlit/code:/streamlit_code
-  #   command: > 
-  #     streamlit run streamlit_code/app.py 
-  #     --server.port 8082
-  #   networks:
-  #     project_network:
-  #       ipv4_address: "10.56.1.13"  # Unique network number
+  streamlit:
+    build: ./docker/streamlit
+    # image: candemas/project3:streamlit
+    container_name: streamlit
+    ports:
+      - "8082:8082"
+    restart: always
+    volumes:
+    - ./images:/images
+    - ./docker/streamlit/code:/streamlit_code
+    command: > 
+      streamlit run streamlit_code/app.py 
+      --server.port 8082
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.13"  # Unique network number
 
 volumes:
   postgres-db-volume:

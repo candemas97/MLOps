@@ -21,7 +21,7 @@ image_minio = Image.open("./images/minio.png")
 image_mlflow = Image.open("./images/mlflow.png")
 image_fastapi = Image.open("./images/fastapi.png")
 
-IP = "localhost"  # "10.43.101.158"  # "localhost"
+IP = "10.43.101.158"  # "localhost"
 
 url_request_api = f"http://{IP}:8085/prediction_cover_type/"
 
@@ -96,44 +96,38 @@ with st.container():
 
 with st.container():
     st.write(f"---")
-    st.subheader(f"Cover-Type Prediction")
+    st.subheader(f"Price Prediction")
     col1, col2, col3 = st.columns(3)
-    var0 = col1.number_input("Elevation", min_value=-10000, value=3448)
-    var1 = col1.number_input("Aspect", min_value=-10000, value=311)
-    var2 = col1.number_input("Slope", min_value=-10000, value=25)
-    var3 = col1.number_input(
-        "Horizontal Distance To Hydrology", min_value=-10000, value=127
+    brokered_by = col1.number_input("brokered_by", min_value=-10000, value=10481)
+    status = col2.text_input("status", value="for_sale")
+    bed = col3.number_input("bed", min_value=-10000, value=3)
+    bath = col1.number_input("bath", min_value=-10000, value=2)
+    acre_lot = col2.number_input(
+        "acre_lot", min_value=-10000, value=1
     )
-    var4 = col2.number_input(
-        "Vertical Distance To Hydrology", min_value=-10000, value=1
+    street = col3.number_input(
+        "street", min_value=-10000, value=1612297
     )
-    var5 = col2.number_input(
-        "Horizontal Distance To Roadways", min_value=-10000, value=1518
-    )
-    var6 = col2.number_input("Hillshade 9am", min_value=-10000, value=146)
-    var7 = col2.number_input("Hilldhase Noon", min_value=-10000, value=214)
-    var8 = col3.number_input("Hillshade 3pm", min_value=-10000, value=204)
-    var9 = col3.number_input(
-        "Horizontal Distance To Fire Points", min_value=-10000, value=1869
-    )
-    var10 = col3.text_input("Widerness Area", value="Neota")
-    var11 = col3.text_input("Soil Type", value="C8772")
+    city = col1.text_input("status", value="Airville")
+    state = col2.text_input("state", value="Pennsylvania")
+    zip_code = col3.text_input("zip_code", value="17302.0")
+    house_size = col1.text_input("house_size", value="1792.0")
+    prev_sold_date = col1.text_input("prev_sold_date", value="2013-07-12")
 
 # Define JSON according to data
 datos_json = {
-    "var_0": [var0],
-    "var_1": [var1],
-    "var_2": [var2],
-    "var_3": [var3],
-    "var_4": [var4],
-    "var_5": [var5],
-    "var_6": [var6],
-    "var_7": [var7],
-    "var_8": [var8],
-    "var_9": [var9],
-    "var_10": [var10],
-    "var_11": [var11],
-}
+        "brokered_by": [brokered_by],
+        "status": [status],
+        "bed": [bed],
+        "bath": [bath],
+        "acre_lot": [acre_lot],
+        "street": [street],
+        "city": [city],
+        "state": [state],
+        "zip_code": [zip_code],
+        "house_size": [house_size],
+        "prev_sold_date": [prev_sold_date],
+    }
 
 with st.container():
 
