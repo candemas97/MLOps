@@ -350,18 +350,18 @@ services:
         ipv4_address: "10.56.1.20"
 
   # # API for request given by users
-  # fast_api:
-  #   build: ./docker/fastapi
-  #   # image: candemas/project3:fastapi
-  #   container_name: fastapi
-  #   ports:
-  #     - '8085:8085'
-  #   volumes:
-  #     - ./docker/fastapi/code/fast_api_main.py:/fast_api_main.py
-  #   restart: always
-  #   networks:
-  #     project_network:
-  #       ipv4_address: "10.56.1.10"
+  fast_api:
+    build: ./docker/fastapi
+    # image: candemas/project3:fastapi
+    container_name: fastapi
+    ports:
+      - '8085:8085'
+    volumes:
+      - ./docker/fastapi/code/fast_api_main.py:/fast_api_main.py
+    restart: always
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.10"
 
   # MinIO - we call it as s3
   s3:

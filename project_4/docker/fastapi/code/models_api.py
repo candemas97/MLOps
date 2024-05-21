@@ -1,27 +1,26 @@
 from pydantic import BaseModel
 from enum import Enum
 
-class COVERTYPE(BaseModel):
-    var_0: list[int] = [3448]
-    var_1: list[int] = [311]
-    var_2: list[int] = [25]
-    var_3: list[int] = [127]
-    var_4: list[int] = [1]
-    var_5: list[int] = [1518]
-    var_6: list[int] = [146]
-    var_7: list[int] = [214]
-    var_8: list[int] = [204]
-    var_9: list[int] = [1869]
-    var_10: list[str] = ["Neota"]
-    var_11: list[str] = ["C8772"]
+class PARAMETERS(BaseModel):
+    brokered_by: list[int] = [10481.0]
+    status: list[str] = ["for_sale"]
+    bed: list[int] = [3.0]
+    bath: list[int] = [2.0]
+    acre_lot: list[int] = [1.0]
+    street: list[int] = [1612297.0]
+    city: list[str] = ["Airville"]
+    state: list[str] = ["Pennsylvania"]
+    zip_code: list[str] = ["17302.0"]
+    house_size: list[str] = ["1792.0"]
+    prev_sold_date: list[str] = ["2013-07-12"]
 
 
 description_API = """
-Level 2 for Machine Learning Operations (MLOps) 🚀
+Level 4 for Machine Learning Operations (MLOps) 🚀
 
 # Summary
 
-The purpose of this API is to use the ML model that was trained and saved with MLFlow, MinIO, MySQL and Airflow.
+The purpose of this API is to use the ML model that was trained and saved with MLFlow, MinIO, MySQL and Airflow, Github Actions.
 
 The possible API are:
 
