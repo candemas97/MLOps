@@ -122,7 +122,6 @@ def reviewing_if_needed_new_traing(DB_HOST: str, DB_USER: str, DB_PASSWORD: str,
     if data_train is None or data_val is None or data_test is None:
         raise ValueError("No data returned from read_clean_data")
 
-    #data_train, data_val, data_test = context["task_instance"].xcom_pull(task_ids="read_clean_data") 
     df_train_clean = pd.read_json(data_train, orient="records")
     df_validation_clean = pd.read_json(data_val, orient="records")
     df_test_clean = pd.read_json(data_test, orient="records")
@@ -236,7 +235,13 @@ def training_selecting_best_model_and_evaluate_solution(DB_HOST: str, DB_USER: s
     
     """
     # Read data
-    data_train, data_val, data_test = context["task_instance"].xcom_pull(task_ids="read_clean_data") 
+    data_train = context["task_instance"].xcom_pull(task_ids="read_data_clean", key="return_value")[0]
+    data_val = context["task_instance"].xcom_pull(task_ids="read_data_clean", key="return_value")[1]
+    data_test = context["task_instance"].xcom_pull(task_ids="read_data_clean", key="return_value")[2]
+
+    if data_train is None or data_val is None or data_test is None:
+        raise ValueError("No data returned from read_clean_data")
+
     df_train_clean = pd.read_json(data_train, orient="records")
     df_validation_clean = pd.read_json(data_val, orient="records")
     df_test_clean = pd.read_json(data_test, orient="records")
