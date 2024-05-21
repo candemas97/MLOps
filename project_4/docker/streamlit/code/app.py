@@ -23,11 +23,11 @@ image_fastapi = Image.open("./images/fastapi.png")
 
 IP = "10.43.101.158"  # "localhost"
 
-url_request_api = f"http://{IP}:8085/prediction_cover_type/"
+url_request_api = f"http://{IP}:8085/prediction/"
 
 # First Container
 with st.container():
-    st.title("Welcome to MLOps Project #2! 👋")
+    st.title("Welcome to MLOps Project #4! 👋")
 
 # Second Container
 with st.container():
@@ -112,7 +112,7 @@ with st.container():
     state = col2.text_input("state", value="Pennsylvania")
     zip_code = col3.text_input("zip_code", value="17302.0")
     house_size = col1.text_input("house_size", value="1792.0")
-    prev_sold_date = col1.text_input("prev_sold_date", value="2013-07-12")
+    prev_sold_date = col2.text_input("prev_sold_date", value="2013-07-12")
 
 # Define JSON according to data
 datos_json = {
@@ -135,7 +135,7 @@ with st.container():
     col0, col1, col2, col3 = st.columns([1, 1, 2, 1])
     with col2:
         # Streamlit Buttom
-        if st.button("Predict Cover Type"):
+        if st.button("Predict Price"):
             respuesta = requests.post(url_request_api, json=datos_json)
             # if response it's ok
             if respuesta.status_code == 200:
