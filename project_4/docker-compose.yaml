@@ -51,8 +51,9 @@ x-airflow-common:
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.6.0}
-  build: 
-    context: ./docker/airflow
+  image: candemas/project4:airflow
+  # build: 
+  #   context: ./docker/airflow
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -351,8 +352,8 @@ services:
 
   # # API for request given by users
   fast_api:
-    build: ./docker/fastapi
-    # image: candemas/project3:fastapi
+    # build: ./docker/fastapi
+    image: candemas/project4:fastapi
     container_name: fastapi
     ports:
       - '8085:8085'
@@ -383,8 +384,8 @@ services:
 
 
   mlflow:
-    build: ./docker/mlflow  # MLFlow Dockerfile path
-    # image: candemas/project3:mlflow
+    # build: ./docker/mlflow  # MLFlow Dockerfile path
+    image: candemas/project4:mlflow
     container_name: mlflow
     environment:
       # MLFlow configuration to use MinIO as S3 backend
@@ -420,29 +421,29 @@ services:
       project_network:
         ipv4_address: "10.56.1.23"  # Unique network number
 
-  # jupyter:
-  #   build: ./docker/jupyter
-  #   # image: candemas/project3:jupyter
-  #   container_name: jupyter
-  #   environment:
-  #     # Jupyter configuration to use MinIO as S3 backend
-  #     MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
-  #     AWS_ACCESS_KEY_ID: admin  # MinIO credentials
-  #     AWS_SECRET_ACCESS_KEY: supersecret
-  #   ports:
-  #     - "8088:8088"
-  #   restart: always
-  #   volumes:
-  #   - ./docker/jupyter:/jupyter_code
-  #   stdin_open: true
-  #   tty: true
-  #   networks:
-  #     project_network:
-  #       ipv4_address: "10.56.1.24"  # Unique network number
+  jupyter:
+    # build: ./docker/jupyter
+    image: candemas/project4:jupyter
+    container_name: jupyter
+    environment:
+      # Jupyter configuration to use MinIO as S3 backend
+      MLFLOW_S3_ENDPOINT_URL: http://s3:8083  # It must match with the service name and MinIO port
+      AWS_ACCESS_KEY_ID: admin  # MinIO credentials
+      AWS_SECRET_ACCESS_KEY: supersecret
+    ports:
+      - "8088:8088"
+    restart: always
+    volumes:
+    - ./docker/jupyter:/jupyter_code
+    stdin_open: true
+    tty: true
+    networks:
+      project_network:
+        ipv4_address: "10.56.1.24"  # Unique network number
 
   streamlit:
-    build: ./docker/streamlit
-    # image: candemas/project3:streamlit
+    # build: ./docker/streamlit
+    image: candemas/project4:streamlit
     container_name: streamlit
     ports:
       - "8082:8082"
