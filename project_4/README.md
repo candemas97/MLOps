@@ -1,4 +1,4 @@
-# MLOps - Project 2
+# MLOps - Project 4
 
 ## How to run this assignment
 
@@ -11,11 +11,11 @@ After that, follow the next steps:
 1. Open this repo in **_Visual Studio Code (VSCode)_**.
 2. Go to the docker-compose.yaml file
 3. Open a new terminal in your current folder
-4. Add the following line in your new terminal: `cd project_2`. This will allow you to be in the current assignment (**project_2**) because the terminal, by default, takes the main folder as the path.
+4. Add the following line in your new terminal: `cd project_4`. This will allow you to be in the current assignment (**project_4**) because the terminal, by default, takes the main folder as the path.
 
 > [!NOTE]
 >
-> If you only download the folder **project_2** you can skip this step (step 4)
+> If you only download the folder **project_4** you can skip this step (step 4)
 
 5. You should have three different folders needed: `dags`, `logs`, `plugins` if you do not have any of them you should run the following lines in your terminal:
 
@@ -70,7 +70,7 @@ Password: supersecret
 
 ![Image 1](./images/img1.png)
 
-4. In the "Bucket Name" type the name you want your bucket to have.
+4. In the "Bucket Name" type the name you want your bucket to have (for this project use _**project4bucket**_)
 5. Press Create Bucket and now you have the bucket name that must be used in all your code
 
 ### 2. StreamLit
@@ -119,13 +119,13 @@ localhost:8080
 2. Add credentials
 
 ```
-Username: admin
-Password: supersecret
+Username: airflow
+Password: airflow
 ```
 
 3. No extra steps needed in the set up.
 
-### 5. (Optional) Jupyter
+### 5. Jupyter
 
 1. In your terminal search the following lines:
 
@@ -158,57 +158,46 @@ localhost:8088
 
 0. Go to Airflow
 
-There are two ways to train the model: using two dags (01-Only-Read-Data-From-API-Cover-Type and 02-Only-Prepare-And-Train-Model-Cover-Type) or just one (All-In-One-Read-Prepare-And-Train-Cover-Type).
+There are two ways to train the model:
 
-1. If you want to use the first option you need to:
+1. Using three dags
 
-   - Run 01-Only-Read-Data-From-API-Cover-Type in the left buttom.
+- 01-Read-And-Save-Raw-Data-From-API
+- 02-transform-to-clean-data
+- 03-train-or-not-and-evaluate
 
-   ![Image 3](./images/img3.png)
+![Image 3](./images/img3.png)
 
-   - When it finishes run 02-Only-Prepare-And-Train-Model-Cover-Type
+> [!NOTE]
+>
+> Remember to wait until the DAG finishes to run the following
 
-   ![Image 4](./images/img4.png)
+2. Using one DAG
 
-   - Your model has been created.
+- If you want to use the second option you just need to run the `04-All-Together`, it is not necessary to run any other DAG.
 
-2. If you want to use the second option you just need to run the All-In-One-Read-Prepare-And-Train-Cover-Type, it is not necessary to run any other DAG.
-
-### Add model to production
-
-0. Go to MLFlow
-1. Go to Models and select the model you are using
-
-![Image 5](./images/img5.png)
-
-2. Select the version you want to use.
-3. Go to Stage >> Transition to `Production`
-
-![Image 6](./images/img6.png)
-
-4. Your model is ready to be used
+![Image 4](./images/img4.png)
 
 ### Predicting using FastAPI
 
 0. Go to FastAPI
-1. Go to `Prediction Model`
+1. Go to `Prediction`
 2. Press `Try it out`
 3. Add the needed data (You can add more than just one value t predict), for example:
 
 ```json
 {
-  "var_0": [3448],
-  "var_1": [311],
-  "var_2": [25],
-  "var_3": [127],
-  "var_4": [1],
-  "var_5": [1518],
-  "var_6": [146],
-  "var_7": [214],
-  "var_8": [204],
-  "var_9": [1869],
-  "var_10": ["Neota"],
-  "var_11": ["C8772"]
+    "brokered_by": [10481.0],
+    "status": ["for_sale"],
+    "bed": [3.0],
+    "bath": [2.0],
+    "acre_lot": [1.0],
+    "street": [1612297.0],
+    "city": ["Airville"],
+    "state": ["Pennsylvania"],
+    "zip_code": ["17302.0"],
+    "house_size": ["1792.0"],
+    "prev_sold_date": ["2013-07-12"]
 }
 ```
 
@@ -219,9 +208,13 @@ There are two ways to train the model: using two dags (01-Only-Read-Data-From-AP
 
 It is needed to:
 
+0. Building and pushing all Docker Images to Docker Hub using Github Actions
 1. Read data from an external API using Airflow
 2. Training a model from Airflow to use MLFlow and to save the models and artifacts in MySQL and MinIO.
-3. Predicting an outcome from FastAPI using the MLFlow productionized model.
+3. Decide if it is needed to train a new model according to some changes
+4. Predicting an outcome from FastAPI using the MLFlow productionized model.
+5. Creating a user interphase
+6. Understand variables with SHAP
 
 ## System Architecture
 
@@ -229,10 +222,13 @@ It is needed to:
 
 The explanation of the system architecture is presented below:
 
+1. Docker Images are created and published with Github Actions
 1. Data was extracted through requests to the provided API using Airflow, and subsequently, this data was added to a MySQL database.
 2. Subsequently, a query is made to the SQL table from the database, using Airflow to then send this data to MLFlow and train the model.
 3. After the model is trained, the model information and artifacts are saved in MinIO and MySQL.
-4. Finally, the best model generated with MLFlow is employed to make predictions with new data through FastAPI.
+4. Finally, the best model generated with MLFlow is employed to make predictions with new data through FastAPI, this model is selected automatically.
+5. If new data arrives, the system determine if it is needed to train again or not the model
+6. After data is collected, a variable analysis is given by SHAP.
 
 > [!NOTE]
 >
